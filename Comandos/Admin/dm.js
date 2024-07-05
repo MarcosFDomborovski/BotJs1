@@ -12,10 +12,16 @@ module.exports = {
             required: true,
         },
         {
-            name: "mensagem",
-            description: "Digite a mensagem",
+            name: "embed",
+            description: "Envia a mensagem em embed",
             type: Discord.ApplicationCommandOptionType.String,
-            required: true,
+            required: false,
+        },
+        {
+            name: "normal",
+            description: "Envie a mensagem sem embed",
+            type: Discord.ApplicationCommandOptionType.String,
+            required: false,
         }
     ],
 
@@ -25,28 +31,56 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando!`, ephemeral: true });
         } else {
             let user = interaction.options.getUser("usuário");
-            let msg = interaction.options.getString("mensagem");
+            let msgEmbed = interaction.options.getString("embed");
+            let msgNormal = interaction.options.getString("normal");
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Random")
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                .setDescription(`${msg}`);
+                .setDescription(`${msgEmbed}`);
 
-            try {
-                user.send({ embeds: [embed] })
-                let emb = new Discord.EmbedBuilder()
-                    .setColor("Green")
-                    .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
+            if (!msgEmbed) msgEmbed = "⠀";
+            if (!msgNormal) msgNormal = "⠀";
+            
+            if (!msgNormal && !msgEmbed) {
+                interaction.reply({content: `Olá ${interaction.user}, você deve fornecer ao menos uma mensagem!`});
+            }
 
-                    interaction.reply({embeds: [emb]})
+            if (msgEmbed === "⠀") {
+                try {
+                    user.send(msgNormal);
+                    let emb = new Discord.EmbedBuilder()
+                        .setColor("Green")
+                        .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
 
-            } catch (e) {
-                let emb = new Discord.EmbedBuilder()
-                .setColor("Red")
-                .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
-                
-                interaction.reply({embeds: [emb]})
+                    interaction.reply({ embeds: [emb] })
+
+                } catch (e) {
+                    let emb = new Discord.EmbedBuilder()
+                        .setColor("Red")
+                        .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
+
+                    interaction.reply({ embeds: [emb] })
+                }
+
+            } else if (msgNormal === "⠀") {
+                try {
+                    user.send({ embeds: [embed] })
+                    let emb = new Discord.EmbedBuilder()
+                        .setColor("Green")
+                        .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
+
+                    interaction.reply({ embeds: [emb] })
+
+                } catch (e) {
+                    let emb = new Discord.EmbedBuilder()
+                        .setColor("Red")
+                        .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
+
+                    interaction.reply({ embeds: [emb] })
+                }
             }
         }
+
     }
 }
