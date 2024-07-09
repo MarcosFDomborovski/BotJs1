@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-//1532.
+//1532.5
 module.exports = {
     name: "ticket",
     description: "Abra o painel de tickets.",

@@ -1,11 +1,13 @@
 const Discord = require("discord.js")
 const config = require("./config.json")
+const { QuickDB } = require("quick.db")
+const db = new QuickDB()
 const client = new Discord.Client({
     intents: [
-        Discord.GatewayIntentBits.Guilds
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildModeration,
     ]
 })
-
 module.exports = client
 
 client.on('interactionCreate', (interaction) => {
@@ -26,8 +28,6 @@ require('./handler')(client)
 client.login(config.token)
 
 /////// nao funciona
-const { QuickDB } = require("quick.db")
-const db = new QuickDB()
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
     let confirm = await db.get(`antilink_${message.guild.id}`);
@@ -216,5 +216,131 @@ client.on("ready", () => {
         console.log(`✅ Conectado ao canal [ ${canal.name} ]`);
     } catch (e) {
         console.log(`❌ Erro ao conectar ao canal de voz: [ ${canal.name} ].`);
+    }
+})
+
+client.on("guildMemberAdd", (member) => {
+    let canalLogs = "1131707660593537175";
+    if (!canalLogs) return;
+
+    let embed = new Discord.EmbedBuilder()
+        .setColor('Green')
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setTitle(`👋 Boas vindas!`)
+        .setDescription(`> Olá ${member}!\nseja Bem-Vindo ao servidor \`${member.guild.name}\`\nAtualmente estamos com \`${member.guild.memberCount}\` membros.`)
+
+    member.guild.channels.cache.get(canalLogs).send({ embeds: [embed], content: `${member}` })
+})
+
+client.on("guildMemberRemove", (member) => {
+    let canalLogs = "1131707660593537175";
+    if (!canalLogs) return;
+
+    let embed = new Discord.EmbedBuilder()
+        .setColor("Red")
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setTitle(`👋 Adeus...`)
+        .setDescription(`> O usuãrio ${member} saiu do servidor!\n> Espero que volte algum dia..\n> Nos sobrou apenas \`${member.guild.memberCount}\` membros.`)
+
+    member.guild.channels.cache.get(canalLogs).send({ embeds: [embed], content: `${member}` })
+})
+
+client.on("interactionCreate", async (interaction) => {
+    if (interaction.isButton()) {
+        if (interaction.customId === "verificar") {
+            let roleId = await db.get(`cargo_verificação_${interaction.guild.id}`)
+            let role = interaction.guild.roles.cache.get(roleId)
+            if (!role) return;
+            interaction.member.roles.add(role.id)
+            interaction.reply({ content: `Olá **${interaction.user.username}**, você foi verificado!`, ephemeral: true })
+        }
+    }
+})
+
+client.on("interactionCreate", async (interaction) => {
+    if (interaction.isButton()) {
+        if (interaction.customId === "ticketsBasico") {
+            let nomeCanal = `🎫 -${interaction.user.id}`;
+            let canal = interaction.guild.channels.cache.find(c => c.name === nomeCanal)
+
+            if (canal) {
+                interaction.reply({ content: `Olá **${interaction.user.username}**, você já possui um ticket em **${canal}**.`, ephemeral: true })
+            } else {
+
+                let categoria = interaction.channel.parent;
+                if (!categoria) categoria = null;
+                interaction.guild.channels.create({
+                    name: nomeCanal,
+                    parent: categoria,
+                    type: Discord.ChannelType.GuildText,
+                    permissionOverwrites: [
+                        {
+                            id: interaction.guild.id,
+                            deny: [Discord.PermissionFlagsBits.ViewChannel]
+                        },
+                        {
+                            id: interaction.user.id,
+                            allow: [
+                                Discord.PermissionFlagsBits.ViewChannel,
+                                Discord.PermissionFlagsBits.SendMessages,
+                                Discord.PermissionFlagsBits.AttachFiles,
+                                Discord.PermissionFlagsBits.EmbedLinks,
+                                Discord.PermissionFlagsBits.AddReactions
+                            ]
+                        }
+                    ]
+                }).then((chat) => {
+
+                    interaction.reply({ content: `�� Olá **${interaction.user.username}**, seu ticket foi aberto em **${chat}**`, ephemeral: true })
+                    let embed = new Discord.EmbedBuilder()
+                        .setColor("Random")
+                        .setDescription(`Olá ${interaction.user}, você abriu o seu ticket.\nAguarde um momento para ser atendido!`);
+
+                    let botao_close = new Discord.ActionRowBuilder().addComponents(
+                        new Discord.ButtonBuilder()
+                            .setCustomId("closeTicket")
+                            .setEmoji("🔒")
+                            .setStyle(Discord.ButtonStyle.Danger)
+                    );
+
+
+                    chat.send({ embeds: [embed], components: [botao_close] }).then(m => {
+                        m.pin();
+                    })
+                })
+            }
+        } else if (interaction.customId === "closeTicket") {
+            interaction.reply(`Olá ${interaction.user}, este ticket será excluído em 5 segundos.`)
+            try {
+                setTimeout(() => {
+                    interaction.channel.delete().catch(e => { return; })
+                }, 5000)
+            } catch (e) {
+                return;
+            }
+        }
+    }
+
+})
+
+client.on("messageCreate", async (message) => {
+    if (message.author.bot) return;
+
+    if (await db.get(`modo_afk_${message.author.id}`) === true) {
+        message.reply(`Olá ${message.author}, seu modo AFK foi desativado!`)
+        await db.delete(`modo_afk_${message.author.id}`)
+    }
+
+    let afk_user = message.mentions.members.first()
+    if (!afk_user) return;
+
+    if (afk_user) {
+        let afk_mode = await db.get(`modo_afk_${afk_user.id}`)
+        if (afk_mode === true) {
+            let afk_motivo = await db.get(`motivo_afk_${afk_user.id}`)
+            message.reply(`Olá ${message.author}, o usu\ario **${afk_user.user.username}** está com o modo AFK ativado pelo motivo: \`${afk_motivo}\`.`)
+        } else {
+            return;
+        }
     }
 })
