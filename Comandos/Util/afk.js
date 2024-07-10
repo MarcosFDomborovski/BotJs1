@@ -1,6 +1,5 @@
 const Discord = require("discord.js")
 const { QuickDB } = require("quick.db")
-const { options } = require("../..")
 const db = new QuickDB()
 
 module.exports = {
@@ -17,7 +16,8 @@ module.exports = {
     ],
     run: async (client, interaction) => {
         let motivo = interaction.options.getString("motivo");
-        let afk_mode = await db.get(`modo_afk_${interaction.user.id}`)
+
+        let afk_mode = await db.set(`modo_afk_${interaction.user.id}`, true)
 
         if (afk_mode === true) {
             interaction.reply({ content: `Olá ${interaction.user}, seu modo AFK já está ativado.`, ephemeral: true })

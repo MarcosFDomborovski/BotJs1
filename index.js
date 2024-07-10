@@ -6,6 +6,8 @@ const client = new Discord.Client({
     intents: [
         Discord.GatewayIntentBits.Guilds,
         Discord.GatewayIntentBits.GuildModeration,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
     ]
 })
 module.exports = client
@@ -338,7 +340,7 @@ client.on("messageCreate", async (message) => {
         let afk_mode = await db.get(`modo_afk_${afk_user.id}`)
         if (afk_mode === true) {
             let afk_motivo = await db.get(`motivo_afk_${afk_user.id}`)
-            message.reply(`Olá ${message.author}, o usu\ario **${afk_user.user.username}** está com o modo AFK ativado pelo motivo: \`${afk_motivo}\`.`)
+            message.reply(`Olá ${message.author}, o usuário **${afk_user.user.username}** está com o modo AFK ativado pelo motivo: \`${afk_motivo}\`.`)
         } else {
             return;
         }
