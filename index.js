@@ -30,21 +30,21 @@ require('./handler')(client)
 client.login(config.token)
 
 /////// nao funciona
-client.on("messageCreate", async (message) => {
-    if (message.author.bot) return;
-    let confirm = await db.get(`antilink_${message.guild.id}`);
+// client.on("messageCreate", async (message) => {
+//     if (message.author.bot) return;
+//     let confirm = await db.get(`antilink_${message.guild.id}`);
 
-    if (confirm === false || confirm === null) {
-        return;
-    }
-    else if (confirm === true) {
-        if (message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) return;
-        if (message.content.toLocaleLowerCase().includes("http")) {
-            message.delete()
-            message.channel.send(`${message.author}, você não pode usar links neste chat!`)
-        }
-    }
-})
+//     if (confirm === false || confirm === null) {
+//         return;
+//     }
+//     else if (confirm === true) {
+//         if (message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) return;
+//         if (message.content.toLocaleLowerCase().includes("http")) {
+//             message.delete()
+//             message.channel.send(`${message.author}, você não pode usar links neste chat!`)
+//         }
+//     }
+// })
 ///////
 
 client.on("interactionCreate", (interaction) => {
@@ -345,4 +345,13 @@ client.on("messageCreate", async (message) => {
             return;
         }
     }
+})
+
+client.on("guildMemberAdd", (member) => {
+    let cargoAutoRole = member.guild.roles.cache.get("1131342710737998036")
+    if (!cargoAutoRole) return console.log("❌ O AutoRole não está configurado.")
+
+    member.roles.add(cargoAutoRole.id).catch(err => {
+        console.log(`❌ Não foi possível adicionar o cargo de AutoRole no usuário ${member.user.tag}.`)
+    })
 })
