@@ -21,25 +21,25 @@ module.exports = {
 
     run: async (client, interaction) => {
 
-        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)){
-            interaction.reply(`Você não possui permissão para utilizar este comando.`);
+        if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)) {
+            interaction.reply({ content: `Você não possui permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let user = interaction.options.getUser("user");
             let reason = interaction.options.getString("motivo");
-            if(!motivo) motivo = "Não definido.";
+            if (!motivo) motivo = "Não definido.";
 
             let embed = new Discord.EmbedBuilder()
-            .setColor("Green")
-            .setDescription(`O usuário ${user} (\`${user.id}\`) foi desbanido com sucesso!`);
+                .setColor("Green")
+                .setDescription(`O usuário ${user} (\`${user.id}\`) foi desbanido com sucesso!`);
 
             let erro = new Discord.EmbedBuilder()
-            .setColor("Red")
-            .setDescription(`Ocorreu um erro ao desbanir o usuário ${user} (\`${user.id}\`) do servidor!`);
+                .setColor("Red")
+                .setDescription(`Ocorreu um erro ao desbanir o usuário ${user} (\`${user.id}\`) do servidor!`);
 
-            interaction.guild.members.unban(user.id, motivo).then(() =>{
-                interaction.reply({embeds: [embed]});
-            }).catch( e => {
-                interaction.reply({embeds: [erro]});
+            interaction.guild.members.unban(user.id, motivo).then(() => {
+                interaction.reply({ embeds: [embed] });
+            }).catch(e => {
+                interaction.reply({ embeds: [erro] });
             })
 
         }

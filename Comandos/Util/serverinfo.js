@@ -19,6 +19,7 @@ module.exports = {
         const canaisCategoria = interaction.guild.channels.cache.filter(c => c.type === Discord.ChannelType.GuildCategory).size;
 
         const embed = new Discord.EmbedBuilder()
+            .setColor("Random")
             .setAuthor({ name: nome, iconURL: icon })
             .setThumbnail(icon)
             .setTitle(`Serverinfo: ${nome}`)

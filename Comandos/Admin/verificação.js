@@ -23,7 +23,7 @@ module.exports = {
 
     run: async (client, interaction) => {
         if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)){
-        interaction.reply({content: `Você não possui permissão para utilizar este comando!`})
+        interaction.reply({content: `Você não possui permissão para utilizar este comando!`, ephemeral: true})
         } else {
             let canal = interaction.options.getChannel("canal");
             if(!canal) canal = interaction.channel;
