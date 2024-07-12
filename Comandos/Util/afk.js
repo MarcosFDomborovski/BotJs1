@@ -17,14 +17,14 @@ module.exports = {
     run: async (client, interaction) => {
         let motivo = interaction.options.getString("motivo");
 
-        let afk_mode = await db.set(`modo_afk_${interaction.user.id}`, true)
+        let afk_mode = await db.get(`modo_afk_${interaction.user.id}`)
 
         if (afk_mode === true) {
             interaction.reply({ content: `Olá ${interaction.user}, seu modo AFK já está ativado.`, ephemeral: true })
         } else {
-            interaction.reply({content: `Olá ${interaction.user}, seu modo AFK foi ativado com sucesso!`, ephemeral: true })
             await db.set(`modo_afk_${interaction.user.id}`, true)
             await db.set(`motivo_afk_${interaction.user.id}`, motivo)
+            interaction.reply({content: `Olá ${interaction.user}, seu modo AFK foi ativado com sucesso!`, ephemeral: true })
         }
     }
 }
