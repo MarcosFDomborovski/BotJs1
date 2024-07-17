@@ -40,14 +40,6 @@ module.exports = {
             interaction.reply({ embeds: [embedEphemeral], ephemeral: true }).then(() => {
                 canal.send({ embeds: [embedTickets], components: [botao] })
             })
-
-
-
-
-
         }
-
-
-
     }
 }

@@ -28,7 +28,6 @@ module.exports = {
           .setDescription(`\`/clear [1 - 99]\``);
         interaction.reply({ embeds: [embed] });
       } else {
-
         interaction.channel.bulkDelete(parseInt(numero))
 
         let embed = new Discord.EmbedBuilder()

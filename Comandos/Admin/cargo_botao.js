@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-// NAO FUNCIONA
 module.exports = {
     name: "cargo_botao",
     description: "Ganhe cargos clicando nos botões.",
@@ -37,9 +36,9 @@ module.exports = {
                     if (!c.member.roles.cache.get(cargo.id)) {
                         c.member.roles.add(cargo.id)
                         c.reply({ content: `Olá ${c.user.username}, você resgatou o cargo ${cargo.name}.`, ephemeral: true })
-                    } else if (c.member.roles.cache.get(cargo.id)){
-                        c.member.roles.cache.remove(cargo.id)
-                        c.reply({content: `Olá ${c.user.username}, você perdeu o cargo ${cargo.name}.`, ephemeral: true})
+                    } else if (c.member.roles.cache.get(cargo.id)) {
+                        c.member.roles.remove(cargo.id)
+                        c.reply({ content: `Olá ${c.user.username}, você perdeu o cargo ${cargo.name}.`, ephemeral: true })
                     }
                 })
             })

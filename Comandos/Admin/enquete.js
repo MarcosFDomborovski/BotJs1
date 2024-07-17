@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const ms = require("ms");
 
 module.exports = {
     name: "enquete",
@@ -12,19 +13,19 @@ module.exports = {
             required: true,
         },
         {
-            name: "título",
+            name: "titulo",
             description: "Coloque um título para a enquete.",
             type: Discord.ApplicationCommandOptionType.String,
             required: true,
         },
         {
-            name: "opção 1",
+            name: "opção1",
             description: "Adicione a opção 1 da votação.",
             type: Discord.ApplicationCommandOptionType.String,
             required: true,
         },
         {
-            name: "opção 2",
+            name: "opção2",
             description: "Adicione a opção 2 da votação.",
             type: Discord.ApplicationCommandOptionType.String,
             required: true,
@@ -36,9 +37,9 @@ module.exports = {
             interaction.reply({ content: "Você não possui permissão para executar este comando!", ephemeral: true });
         } else {
             const tempo = interaction.options.getString("tempo");
-            const titulo = interaction.options.getString("título");
-            const op1 = interaction.options.getString("opção 1")
-            const op2 = interaction.options.getString("opção 2")
+            const titulo = interaction.options.getString("titulo");
+            const op1 = interaction.options.getString("opção1");
+            const op2 = interaction.options.getString("opção2");
 
             let tempoMs = ms(tempo);
             if (isNaN(tempoMs)) return interaction.reply({ ephemeral: true, content: `**Informe um tempo válido!**}` })
@@ -78,21 +79,21 @@ module.exports = {
                         if (!emojiOpc1) emojiOpc1 = 0
                         if (!emojiOpc2) emojiOpc2 = 0
                         
-                        if (emojiOpc1 > emojiOpc2) win = op1 + `Total de reações: \`${emojiOpc1}\``
-                        if (emojiOpc2 > emojiOpc1) win = op2 + `Total de reações: \`${emojiOpc2}\``             
+                        if (emojiOpc1 > emojiOpc2) win = `**${op1}**` + `\n*(Total de reações:* \`${emojiOpc1}\`)`
+                        if (emojiOpc2 > emojiOpc1) win = `**${op2}**` + `\n*(Total de reações:* \`${emojiOpc2}\`)`             
                       
-                        if (emojiOpc1 = emojiOpc2) win = `Houve um empate! (Total de reações: \`${emojiOpc1}\`)`
+                        if (emojiOpc1 === emojiOpc2) win = `Houve um empate! (Total de reações: \`${emojiOpc1}\`)`
                         
                         const embedOff = new Discord.EmbedBuilder()
                             .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                            .setColor("null")
+                            .setColor("Red")
                             .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
                             .setTitle(`Enquete Encerrada: ${titulo}`)
-                            .setDescription(`Enquete criada por ${interaction.user}.\n\n> ${emojis[0]}  1️⃣ - ${op1}\n> ${emojis[1]} 2️⃣ - ${op2}`)
+                            .setDescription(`Enquete criada por ${interaction.user}.\n\n> ${emojis[0]} - ${op1}\n> ${emojis[1]} - ${op2}`)
                             .setTimestamp(new Date(new Date().getTime() + tempoMs))
                             .setFooter({ text: `Enquete encerrada às:` })
 
-                        msg.reply({ content: `**Enquete Encerrada!**\n\n> __Vencedor:__ ${win}` })
+                        msg.reply({ content: `**Enquete Encerrada!**\n\n> __Vencedor:__  ${win} ` })
 
                         msg.edit({ embeds: [embedOff] })
                     }, tempoMs);

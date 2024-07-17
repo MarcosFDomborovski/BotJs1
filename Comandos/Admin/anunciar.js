@@ -20,7 +20,7 @@ module.exports = {
         },
         {
             name: "chat",
-            description: "Mencione um canal.",
+            description: "Mencione um canal onde o anúncio será enviado.",
             type: Discord.ApplicationCommandOptionType.Channel,
             required: true,
         },
@@ -43,7 +43,7 @@ module.exports = {
             let cor = interaction.options.getString("cor");
             if (!cor) cor = "Random";
             if (Discord.ChannelType.GuildText !== chat.type)
-                return interaction.reply(`❌ Este canal não é um canal de texto para enviar uma mensagem!`);
+                return interaction.reply({content:`❌ Este canal não é um canal de texto para enviar uma mensagem!`, ephemeral: true});
 
             let embed = new Discord.EmbedBuilder()
                 .setTitle(titulo)
@@ -51,9 +51,9 @@ module.exports = {
                 .setColor(cor)
 
             chat.send({ embeds: [embed] }).then(() => {
-                interaction.reply(`✅ Seu anúncio foi enviado em ${chat} com sucesso!`)
+                interaction.reply({ content: `✅ Seu anúncio foi enviado em ${chat} com sucesso!`, ephemeral: true })
             }).catch((e) => {
-                interaction.reply(`❌ Algo deu errado.`);
+                interaction.reply({ content: `❌ Algo deu errado.`, ephemeral: true });
             })
         }
     }

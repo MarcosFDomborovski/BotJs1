@@ -33,16 +33,5 @@ module.exports = {
                 interaction.reply({content: `Ops ${interaction.user}, algo deu errado!`})
             })
         }
-
-
-
-
-
-
-
-
-
     }
 }
-
-

@@ -78,7 +78,7 @@ module.exports = {
 
     run: async (client, interaction) => {
         if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageGuild)) {
-            interaction.reply(`Você não possui permissão para utilizar este comando!`)
+            interaction.reply({content:`Você não possui permissão para utilizar este comando!`, ephemeral: true})
         } else {
             let premio = interaction.options.getString("prêmio");
             let tempo = interaction.options.getString("tempo");
