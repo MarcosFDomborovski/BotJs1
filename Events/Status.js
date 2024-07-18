@@ -16,7 +16,6 @@ async function activity() {
     smallImageKey:
       "https://cdn.discordapp.com/avatars/474334792830156805/336c45ee65b6a5ce56896dbb1b2c539d.webp?size=1024&format=webp&width=0&height=192",
     smallImageText: "PIMPOSO",
-
     instance: false,
     startTimestamp: Date.now(),
     buttons: [

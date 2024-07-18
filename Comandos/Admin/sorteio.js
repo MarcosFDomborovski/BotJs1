@@ -142,7 +142,7 @@ module.exports = {
 
                 if (click.length == 0) return interaction.followUp(`**SORTEIO CANCELADO**\nNão houveram participantes no sorteio \`${premio}\`.`)
 
-                interaction.followUp(`🥳  Parabéns <@${ganhador}> você ganhou **${premio}**  🥳`)
+                interaction.followUp(`🥳🎉  Parabéns <@${ganhador}> você ganhou **${premio}**  🎉🥳`)
             }, duracao)
         }
     }
