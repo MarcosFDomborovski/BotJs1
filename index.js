@@ -1,5 +1,11 @@
 const Discord = require("discord.js")
 const config = require("./config.json")
+const Database = require("./config/database")
+const db = new Database;
+
+db.connect();
+
+
 const client = new Discord.Client({
     intents: [1, 512, 32768, 2, 128,
         Discord.IntentsBitField.Flags.DirectMessages,
@@ -45,3 +51,5 @@ fs.readdir('./Events', (err, file) => {
         require(`./Events/${event}`)
     })
 })
+
+client.userDB = require("./models/user")
