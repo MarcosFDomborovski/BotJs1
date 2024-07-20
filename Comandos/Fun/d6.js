@@ -10,9 +10,11 @@ module.exports = {
 
         let embed = new Discord.EmbedBuilder()
             .setColor("Random")
+            .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
             .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-            .setTitle(`Rolem os dados!`)
-            .setDescription(`O usuário rolou um D6 e tirou: \`${random}\`.`)
+            .setTitle(`🎲 Dado Rodado! 🎲`)
+            .setDescription(`Parabéns ${interaction.user}! Você girou com sucesso o dado e tirou um **${random}**!`)
+            .setTimestamp(Date.now())
         let embedErro = new Discord.EmbedBuilder()
             .setColor("Red")
             .setTitle("Erro")

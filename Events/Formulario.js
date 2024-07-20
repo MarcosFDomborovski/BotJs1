@@ -15,25 +15,25 @@ client.on("interactionCreate", async (interaction) => {
 
             const pergunta1 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta1")
-                .setLabel("Primeira pergunta.")
+                .setLabel("Como está sendo sua relação com os outros membros ?")
                 .setMaxLength(30)
                 .setMinLength(5)
-                .setPlaceholder("Escreva a resposta da primeira pergunta.")
+                .setPlaceholder("Ex: Legal, boa, chata, ruim...")
                 .setRequired(true)
                 .setStyle(Discord.TextInputStyle.Short)
 
             const pergunta2 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta2")
-                .setLabel("Segunda pergunta.")
+                .setLabel("O que você pensa do Dono do servidor ? (Gypcoom)")
                 .setMaxLength(30)
                 .setMinLength(5)
-                .setPlaceholder("Escreva a resposta da segunda pergunta.")
+                .setPlaceholder("Ex: É um cara legal, meio chato, muito engraçado...")
                 .setStyle(Discord.TextInputStyle.Short)
 
             const pergunta3 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta3")
-                .setLabel("Terceira pergunta.")
-                .setPlaceholder("Escreva a resposta da terceira pergunta.")
+                .setLabel("Nos diga como está sendo sua experiência com o servidor.")
+                .setPlaceholder("Escreva sua resposta.")
                 .setStyle(Discord.TextInputStyle.Paragraph)
 
 

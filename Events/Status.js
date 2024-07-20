@@ -41,6 +41,6 @@ RPC.on("ready", async () => {
 });
 
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`Logado como ${client.user.tag}!`);
   RPC.login({ clientId: ID }).catch(console.error);
 });

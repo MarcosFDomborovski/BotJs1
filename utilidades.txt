@@ -1,1 +1,8 @@
 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+.setColor("Green")
+.setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
+.setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+.setTitle(`🤑 Moedas Resgatadas! 🤑`)
+.setDescription(`Parabéns ${userDatabase.username}! Você resgatou com sucesso ${amount} moedas!`)
+.setTimestamp(Date.now())
+.setFooter({ text: `Data de resgate:` });

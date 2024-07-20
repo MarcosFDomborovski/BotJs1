@@ -17,6 +17,7 @@ module.exports = {
 
     run: async (client, interaction) => {
         let user = interaction.options.getUser("usuário");
+        
         if (!user) user = interaction.user;
 
         let member = interaction.guild.members.cache.get(user.id);

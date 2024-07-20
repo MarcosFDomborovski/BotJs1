@@ -23,7 +23,6 @@ module.exports = {
     run: async (client, interaction) => {
 
         if (interaction.user.id !== DONO) return interaction.reply({ content: `Apenas o meu dono pode utilizar este comando!`, ephemeral: true })
-
         try {
             const status = interaction.options.getString("status");
             const desc = interaction.options.getString("descrição");

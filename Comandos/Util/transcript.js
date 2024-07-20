@@ -15,6 +15,10 @@ module.exports = {
     ],
 
     run: async (client, interaction) => {
+        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageMessages)){
+            interaction.reply({content: `Você não tem permissão para utilizar este comando!`, ephemeral: true})
+        }
+        let canalLogs = "1264342985256992849"
         let canalTranscript = interaction.options.getChannel("chat");
         if (!canalTranscript) canalTranscript = interaction.channel;
 
@@ -32,7 +36,7 @@ module.exports = {
 
         const embed1 = new Discord.EmbedBuilder()
             .setColor("Green")
-            .setDescription(`O transcript foi criado com sucesso em ${canalTranscript}!`)
+            .setDescription(`O transcript foi criado com sucesso em ${canalLogs}!`)
 
         const embed2 = new Discord.EmbedBuilder()
             .setColor("Green")
@@ -44,7 +48,7 @@ module.exports = {
             });
         } else {
             interaction.reply({ embeds: [embed1], ephemeral: true }).then(() => {
-                canalTranscript.send({ embeds: [embed2], files: [attachment] }).catch(e => {
+                canalLogs.send({ embeds: [embed2], files: [attachment] }).catch(e => {
                     interaction.reply({ content: "Algo deu errado.", ephemeral: true })
                 })
             })
