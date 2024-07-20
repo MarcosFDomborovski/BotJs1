@@ -38,7 +38,7 @@ client.on('interactionCreate', (interaction) => {
 })
 
 client.on('ready', () => {
-    console.log(`🔥 Bot ta online em ${client.user.username}!`)
+    console.log(`🔥 O bot ${client.user.username} ta online!`)
 })
 
 client.slashCommands = new Discord.Collection()

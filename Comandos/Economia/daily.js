@@ -1,53 +1,53 @@
-// const Discord = require("discord.js")
-// const { QuickDB } = require("quick.db")
-// const db = new QuickDB();
-// const ms = require("ms");
-// const cooldowns = {}
+const Discord = require("discord.js");
 
-// module.exports = {
-//     name: "daily",
-//     description: "Resgate seu prêmio diário",
-//     type: Discord.ApplicationCommandType.ChatInput,
+module.exports = {
+  name: "daily",
+  description: "Resgate suas moedas diárias.",
+  type: Discord.ApplicationCommandType.ChatInput,
 
-//     run: async (client, interaction) => {
-//         if (!cooldowns[interaction.user.id]) cooldowns[interaction.user.id] = { lastCmd: null };
-//         let ultimoCmd = cooldowns[interaction.user.id].lastCmd;
-//         if (ultimoCmd !== null && timeout - (Date.now() - ultimoCmd) > 0) {
-//             let time = ms(timeout - (Date.now() - ultimoCmd));
-//             let falta = [time.seconds, 'segundos'];
-//             if (resta[0] == 0) resta = ['alguns', 'milisegundos'];
-//             if (resta[0] == 1) resta = [time.seconds, 'segundo'];
+  run: async (client, interaction) => {
+    const userDatabase = await client.userDB.findOne({ discordId: interaction.user.id, username: interaction.user }) || await client.userDB.create({ discordId: interaction.user.id })
 
-//             let embed = new Discord.EmbedBuilder()
-//                 .setColor("Yellow")
-//                 .setTitle(`❌ Daily já resgatado! ❌`)
-//                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-//                 .setDescription(`Espere \`${time}\` para poder resgatar seu daily novamente!`)
+    if (userDatabase.cooldowns.daily < Date.now()) {
+      const amount = Math.floor(Math.random() * 5000);
+      await client.userDB.updateOne(
+        {
+          discordId: interaction.user.id,
+        },
+        {
+          $inc: {
+            dinheiro: amount,
+          },
+        }
+      );
+      await client.userDB.updateOne(
+        {
+          discordId: interaction.user.id,
+        },
+        {
+          $set: {
+            'cooldowns.daily': Date.now() + 1000 * 60 * 60 * 24,
+          },
+        }
+      );
+      const embed = new Discord.EmbedBuilder()
+        .setColor("Green")
+        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
+        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+        .setTitle(`🤑 Moedas Resgatadas! 🤑`)
+        .setDescription(`Parabéns ${userDatabase.username}! Você resgatou com sucesso ${amount} moedas!`)
+        .setTimestamp(Date.now())
+        .setFooter({ text: `Data de resgate:` });
 
-//             interaction.reply({ embeds: [embed], ephemeral: true })
-//             return
-//         } else {
-//             cooldowns[interaction]
-
-//             let quantia = Math.ceil(Math.random() * 5000); // Máximo de moedas
-//             if (quantia < 1000) quantia += 1000;           // Mínimo de moedas
-
-//             await db.add(`carteira_${interaction.user.id}`, quantia)
-
-//             let embed = new Discord.EmbedBuilder()
-//             .setColor("Green")
-//             .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-//             .setDescription(`Você resgatou \`${quantia}\` moedas em seu daily.\nUtilize o comando \`/carteira\` para ver seu total de moedas.`)
-            
-//             interaction.reply({embeds: [embed]})
-//         }
-//     }
-
-
-
-
-
-
-
-
-// }
+      interaction.reply({ embeds: [embed] });
+    } else {
+      const embed = new Discord.EmbedBuilder()
+        .setColor("Red")
+        .setTitle(`❌ Moedas já resgatadas! ❌`)
+        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+        .setDescription(`Olá ${userDatabase.username}, você já resgatou suas moedas diárias! Tente novamente <t:${Math.floor(userDatabase.cooldowns.daily / 1000)}:R>!`)
+      
+        interaction.reply({ embeds: [embed] })
+    }
+  }
+}

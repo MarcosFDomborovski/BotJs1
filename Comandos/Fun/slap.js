@@ -1,7 +1,7 @@
-const Discord = require("discord.js")
+const Discord = require('discord.js')
 module.exports = {
     name: "slap",
-    description: "Dê um tapa em um usuário.",
+    description: "Dê um tapa em uma pessoa.",
     type: Discord.ApplicationCommandType.ChatInput,
     options: [
         {
@@ -16,19 +16,19 @@ module.exports = {
         let user = interaction.options.getUser("membro")
 
         var lista1 = [
-            "https://imgur.com/HYJHoG7.gif",
-            "https://imgur.com/9GxTsgl.gif",
-            "https://imgur.com/mT4VjD6.gif",
-            "https://imgur.com/mT4VjD6.gif",
-            "https://imgur.com/w66ZqGR.gif"
+            'https://imgur.com/HYJHoG7.gif',
+            'https://imgur.com/9GxTsgl.gif',
+            'https://imgur.com/mT4VjD6.gif',
+            'https://imgur.com/mT4VjD6.gif',
+            'https://imgur.com/w66ZqGR.gif'
         ];
 
         var lista2 = [
-            "https://imgur.com/oSoudVd.gif",
-            "https://imgur.com/T9w8eFV.gif",
-            "https://imgur.com/nuDmQu5.gif",
-            "https://imgur.com/wlLCjRo.gif",
-            "https://imgur.com/sVeYncu.gif"
+            'https://imgur.com/oSoudVd.gif',
+            'https://imgur.com/T9w8eFV.gif',
+            'https://imgur.com/nuDmQu5.gif',
+            'https://imgur.com/wlLCjRo.gif',
+            'https://imgur.com/sVeYncu.gif'
         ];
 
         var random1 = lista1[Math.floor(Math.random() * lista1.length)];
@@ -42,8 +42,8 @@ module.exports = {
         const button = new Discord.ActionRowBuilder()
             .addComponents(
                 new Discord.ButtonBuilder()
-                    .setCustomId("1")
-                    .setLabel("Retribuir")
+                    .setCustomId('1')
+                    .setLabel('Retribuir')
                     .setStyle(Discord.ButtonStyle.Primary)
                     .setDisabled(false)
 
@@ -56,23 +56,28 @@ module.exports = {
 
         interaction.reply({ embeds: [embed], components: [button] }).then(() => {
 
-            const filter = i => i.customId === "1" && i.user.id === user.id;
+            const filter = i => i.customId === '1' && i.user.id === user.id;
             const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1 });
 
-            collector.on("collect", async i => {
-                if (i.customId === "1") {
+            collector.on('collect', async i => {
+                if (i.customId === '1') {
                     i.reply({ embeds: [embed1] })
                 }
             });
+
             collector.on("end", () => {
                 interaction.editReply({
-                    components: [new Discord.ActionRowBuilder().addComponents(
-                        new Discord.ButtonBuilder()
-                            .setCustomId("1")
-                            .setLabel("Retribuir")
-                            .setStyle(Discord.ButtonStyle.Primary)
-                            .setDisabled(true)
-                    )]
+                    components: [
+                        new Discord.ActionRowBuilder()
+                            .addComponents(
+                                new Discord.ButtonBuilder()
+                                    .setCustomId('1')
+                                    .setLabel('Retribuir')
+                                    .setStyle(Discord.ButtonStyle.Primary)
+                                    .setDisabled(true)
+
+                            )
+                    ]
                 })
             })
 
