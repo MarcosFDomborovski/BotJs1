@@ -3,7 +3,7 @@ const client = require('../index')
 
 client.on("inviteCreate", (invite) => {
 
-    const channelLog = invite.guild.channels.cache.get("1131707660593537175")
+    const channelLog = invite.guild.channels.cache.get("1264342985256992849")
     const convite = {
         url: invite.url,
         canal: invite.channel,
@@ -54,7 +54,7 @@ client.on("inviteCreate", (invite) => {
 })
 client.on("inviteDelete", (invite) => {
 
-    const channelLog = invite.guild.channels.cache.get("1131707660593537175")
+    const channelLog = invite.guild.channels.cache.get("1264342985256992849")
     const convite = {
         url: invite.url,
         canal: invite.channel,

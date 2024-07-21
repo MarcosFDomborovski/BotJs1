@@ -13,12 +13,6 @@ module.exports = {
             type: Discord.ApplicationCommandOptionType.Channel,
             required: true,
         },
-        {
-            name: "canal_logs",
-            description: "Mencione um canal para enviar as logs dos formulários recebidos.",
-            type: Discord.ApplicationCommandOptionType.Channel,
-            required: true,
-        }
     ],
 
     run: async (client, interaction) => {
@@ -27,7 +21,7 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let canal_formulario = interaction.options.getChannel("canal_formulário");
-            let canalLogs = interaction.options.getChannel("canal_logs");
+            let canalLogs = "1264342985256992849"
 
             if (canal_formulario.type !== Discord.ChannelType.GuildText) {
                 interaction.reply({ content: `O canal ${canal_formulario} não é um canal de texto!`, ephemeral: true })

@@ -27,7 +27,7 @@ module.exports = {
     ],
     run: async (client, interaction) => {
 
-        let canalLogsId = "1131707660593537175";
+        let canalLogsId = "1264342985256992849";
         let member = interaction.options.getUser("membro")
         let nota = interaction.options.getNumber("nota")
         let comentario = interaction.options.getString("comentário")

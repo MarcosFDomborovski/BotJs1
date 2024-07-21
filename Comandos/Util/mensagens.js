@@ -1,6 +1,4 @@
-const Discord = require("discord.js")
-const { QuickDB } = require("quick.db")
-const db = new QuickDB();
+const Discord = require("discord.js");
 
 module.exports = {
     name: "mensagens",
@@ -24,19 +22,22 @@ module.exports = {
         if (!member) {
             const embed = new Discord.EmbedBuilder()
                 .setColor("Red")
-                .setDescription(`O usuário ${member} não está no servidor!`)
+                .setDescription(`O usuário ${member} não está no servidor!`);
                 
-            interaction.reply({ embeds: [embed] })
+            interaction.reply({ embeds: [embed] });
         } else {
-            let messageCounter = await db.get(`messageCounter_${member.user.id}`);
-            if (!messageCounter) messageCounter = 0;
+            let messageCountDoc = await client.userDB.findOne({ discordId: member.user.id });
+            if (!messageCountDoc) {
+                messageCountDoc = await client.userDB.create({ discordId: member.user.id, mensagens: 0 });
+                await messageCountDoc.save();
+            }
 
             const embed = new Discord.EmbedBuilder()
                 .setColor("Green")
                 .setAuthor({ name: member.user.username, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-                .setDescription(`O usuário ${member} possui \`${messageCounter}\` mensagens neste servidor.`)
+                .setDescription(`O usuário ${member} possui \`${messageCountDoc.mensagens}\` mensagens neste servidor.`);
 
-            interaction.reply({ embeds: [embed] })
+            interaction.reply({ embeds: [embed] });
         }
     }
-}
+};

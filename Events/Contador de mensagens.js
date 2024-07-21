@@ -1,8 +1,15 @@
 const Discord = require("discord.js")
 const client = require('../index')
-const {QuickDB} = require('quick.db')
-const db = new QuickDB()
 
-client.on('messageCreate', async (message) =>{
-    await db.add(`messageCounter_${message.author.id}`, 1)
-})
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+
+    let messageCount = await client.userDB.findOne({ discordId: message.author.id })
+
+    if (!messageCount) {
+        messageCount = await client.userDB.create({ discordId: message.author.id, mensagens: 0 });
+    }
+
+    messageCount.mensagens += 1;
+    await messageCount.save();
+});

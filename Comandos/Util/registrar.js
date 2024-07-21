@@ -19,7 +19,7 @@ module.exports = {
             }
         }
         const canal = {
-            logs: interaction.guild.channels.cache.get("1131707660593537175"),
+            logs: interaction.guild.channels.cache.get("1264342985256992849"),
         }
 
         if (interaction.member.roles.cache.get(roles.registrado.id)) return interaction.reply({

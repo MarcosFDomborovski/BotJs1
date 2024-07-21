@@ -4,7 +4,7 @@ const { QuickDB } = require('quick.db')
 const db = new QuickDB()
 
 client.on("guildMemberAdd", (member) => {
-    let canalLogs = "1131707660593537175";
+    let canalLogs = "1264342985256992849";
     if (!canalLogs) return;
 
     let embed = new Discord.EmbedBuilder()
@@ -17,7 +17,7 @@ client.on("guildMemberAdd", (member) => {
 })
 
 client.on("guildMemberRemove", (member) => {
-    let canalLogs = "1131707660593537175";
+    let canalLogs = "1264342985256992849";
     if (!canalLogs) return;
 
     let embed = new Discord.EmbedBuilder()
