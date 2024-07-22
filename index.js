@@ -5,7 +5,6 @@ const db = new Database;
 
 db.connect();
 
-
 const client = new Discord.Client({
     intents: [1, 512, 32768, 2, 128,
         Discord.IntentsBitField.Flags.DirectMessages,

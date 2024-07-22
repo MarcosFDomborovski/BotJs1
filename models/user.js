@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-  discordId: { type: Number, required: true },
-  username: { type: String, required: false },
+  discordId: { type: String, required: true },
+  username: { type: String, required: true, default: "Usuário" },
   dinheiro: { type: Number, required: false, default: 0 },
   mensagens: { type: Number, default: 0 },
   cooldowns: {
@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: () => Date.now() + 1000 * 3 * 60 * 60,
+    default: () => Date.now() + (1000 * 3 * 60 * 60) * (-1),
     required: true,
   },
 });

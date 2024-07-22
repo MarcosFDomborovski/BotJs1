@@ -6,7 +6,8 @@ module.exports = {
   type: Discord.ApplicationCommandType.ChatInput,
 
   run: async (client, interaction) => {
-    const userDatabase = await client.userDB.findOne({ discordId: interaction.user.id, username: interaction.user }) || await client.userDB.create({ discordId: interaction.user.id })
+    let userDatabase = await client.userDB.findOne({ discordId: interaction.user.id })
+    if (!userDatabase) userDatabase = await client.userDB.create({ discordId: interaction.user.id, username: interaction.user.username })
 
     if (userDatabase.cooldowns.daily < Date.now()) {
       const amount = Math.floor(Math.random() * 5000);
@@ -35,19 +36,20 @@ module.exports = {
         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
         .setTitle(`🤑 Moedas Resgatadas! 🤑`)
-        .setDescription(`Parabéns ${userDatabase.username}! Você resgatou com sucesso ${amount} moedas!`)
+        .setDescription(`Parabéns <@${userDatabase.discordId}>! Você resgatou com sucesso ${amount} moedas!`)
         .setTimestamp(Date.now())
         .setFooter({ text: `Data de resgate:` });
 
-      interaction.reply({ embeds: [embed] });
+      await interaction.reply({ embeds: [embed] });
     } else {
       const embed = new Discord.EmbedBuilder()
         .setColor("Red")
+        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
         .setTitle(`❌ Moedas já resgatadas! ❌`)
         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-        .setDescription(`Olá ${userDatabase.username}, você já resgatou suas moedas diárias! Tente novamente <t:${Math.floor(userDatabase.cooldowns.daily / 1000)}:R>!`)
-      
-        interaction.reply({ embeds: [embed] })
+        .setDescription(`Olá <@${userDatabase.discordId}>, você já resgatou suas moedas diárias! Tente novamente <t:${Math.floor(userDatabase.cooldowns.daily / 1000)}:R>!`)
+
+      await interaction.reply({ embeds: [embed] })
     }
   }
 }

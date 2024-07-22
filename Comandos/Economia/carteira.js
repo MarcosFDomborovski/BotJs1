@@ -7,14 +7,14 @@ module.exports = {
 
 
     run: async (client, interaction) => {
-        const userDatabase = await client.userDB.findOne({ discordId: interaction.user.id,  username: interaction.user}) || await client.userDB.create({ discordId: interaction.user.id, username: interaction.user })
+        let userDatabase = await client.userDB.findOne({ discordId: interaction.user.id})
+        if(!userDatabase) userDatabase = await client.userDB.create({ discordId: interaction.user.id, username: interaction.user.username })
 
         let embed = new Discord.EmbedBuilder()
             .setColor("Yellow")
             .setTitle(`💰 Carteira`)
-            .setDescription(`Olá ${userDatabase.username}, você possui \`${userDatabase.dinheiro}\` moedas em sua carteira.`)
+            .setDescription(`Olá <@${userDatabase.discordId}>, você possui \`${userDatabase.dinheiro}\` moedas em sua carteira.`)
 
-        interaction.reply({ embeds: [embed] });
-
+        await interaction.reply({ embeds: [embed] });
     }
 }
