@@ -21,15 +21,15 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let canal_formulario = interaction.options.getChannel("canal_formulário");
-            let canalLogs = "1264342985256992849"
+            let canalLogs = interaction.options.getChannel("canal_formulário")
 
             if (canal_formulario.type !== Discord.ChannelType.GuildText) {
                 interaction.reply({ content: `O canal ${canal_formulario} não é um canal de texto!`, ephemeral: true })
 
             } else if (canalLogs.type !== Discord.ChannelType.GuildText) {
-            
+
                 interaction.reply({ content: `O canal ${canalLogs} não é um canal de texto!`, ephemeral: true })
-            
+
             } else {
                 await db.set(`canal_formulario_${interaction.guild.id}`, canal_formulario.id)
                 await db.set(`canal_logs_${interaction.guild.id}`, canalLogs.id)
@@ -43,19 +43,19 @@ module.exports = {
                     let embedFormulario = new Discord.EmbedBuilder()
                         .setColor("Random")
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                        .setThumbnail(interaction.guild.iconURL({ dynamic: true}))
+                        .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
                         .setTitle(`Formulário:`)
                         .setDescription(`Faça seu formulário clicando no botão abaixo!`)
 
                     let botao = new Discord.ActionRowBuilder().addComponents(
                         new Discord.ButtonBuilder()
-                           .setCustomId("formulario")
-                           .setEmoji("☝")
-                           .setLabel("Clique Aqui")
-                           .setStyle(Discord.ButtonStyle.Primary)
+                            .setCustomId("formulario")
+                            .setEmoji("☝")
+                            .setLabel("Clique Aqui")
+                            .setStyle(Discord.ButtonStyle.Primary)
                     );
 
-                    canal_formulario.send({embeds: [embedFormulario], components:[botao]})
+                    canal_formulario.send({ embeds: [embedFormulario], components: [botao] })
                 })
             }
         }

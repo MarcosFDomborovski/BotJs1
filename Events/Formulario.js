@@ -15,24 +15,21 @@ client.on("interactionCreate", async (interaction) => {
 
             const pergunta1 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta1")
-                .setLabel("Como está sendo sua relação com os outros membros ?")
-                .setMaxLength(30)
-                .setMinLength(5)
+                .setLabel("Descreva sua relação com os outros membros ?")
                 .setPlaceholder("Ex: Legal, boa, chata, ruim...")
                 .setRequired(true)
-                .setStyle(Discord.TextInputStyle.Short)
+                .setStyle(Discord.TextInputStyle.Paragraph)
 
             const pergunta2 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta2")
-                .setLabel("O que você pensa do Dono do servidor ? (Gypcoom)")
-                .setMaxLength(30)
-                .setMinLength(5)
+                .setLabel("Oque você acha do Dono do servidor? (Gypcoom)")
+      
                 .setPlaceholder("Ex: É um cara legal, meio chato, muito engraçado...")
-                .setStyle(Discord.TextInputStyle.Short)
+                .setStyle(Discord.TextInputStyle.Paragraph)
 
             const pergunta3 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta3")
-                .setLabel("Nos diga como está sendo sua experiência com o servidor.")
+                .setLabel("Como está sendo sua experiência com o server?")
                 .setPlaceholder("Escreva sua resposta.")
                 .setStyle(Discord.TextInputStyle.Paragraph)
 

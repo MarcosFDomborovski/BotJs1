@@ -28,29 +28,45 @@ module.exports = {
           .setDescription(`\`/clear [1 - 99]\``);
         interaction.reply({ embeds: [embed] });
       } else {
-        interaction.channel.bulkDelete(parseInt(numero))
+        try {
+          const fetchedMessages = await interaction.channel.messages.fetch({ limit: numero });
 
-        let embed = new Discord.EmbedBuilder()
-          .setColor("Green")
-          .setAuthor({
-            name: interaction.guild.name,
-            iconURL: interaction.guild.iconURL({ dynamic: true })
-          })
-          .setDescription(
-            `O canal de texto ${interaction.channel} teve \`${numero}\` mensagens deletadas por \`${interaction.user.username}\`.`
-          )
-        interaction.reply({ embeds: [embed] });
+          if (fetchedMessages.size === 0) {
+            let embed = new Discord.EmbedBuilder()
+              .setColor("Red")
+              .setDescription(`Não há mensagens suficientes para deletar.`);
+            interaction.reply({ embeds: [embed], ephemeral: true });
+          } else {
+            await interaction.channel.bulkDelete(fetchedMessages, true);
 
-        let apagarMensagem = "sim";
+            let embed = new Discord.EmbedBuilder()
+              .setColor("Green")
+              .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL({ dynamic: true })
+              })
+              .setDescription(
+                `O canal de texto ${interaction.channel} teve \`${fetchedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`
+              );
+            interaction.reply({ embeds: [embed] });
 
-        if (apagarMensagem === "sim") {
-          setTimeout(() => {
-            interaction.deleteReply();
-          }, 5000);
-        } else if (apagarMensagem === "nao") {
-          return;
+            let apagarMensagem = "sim";
+            if (apagarMensagem === "sim") {
+              setTimeout(() => {
+                interaction.deleteReply();
+              }, 5000);
+            } else if (apagarMensagem === "nao") {
+              return;
+            }
+          }
+        } catch (error) {
+          console.error(error);
+          let embed = new Discord.EmbedBuilder()
+            .setColor("Red")
+            .setDescription(`Ocorreu um erro ao tentar deletar as mensagens. Certifique-se de que as mensagens não são mais antigas que 14 dias e que há mensagens suficientes para deletar.`);
+          interaction.reply({ embeds: [embed], ephemeral: true });
         }
       }
     }
-  },
-};
+  }
+}

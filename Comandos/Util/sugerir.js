@@ -21,16 +21,15 @@ module.exports = {
         } else {
             let sugestao = interaction.options.getString("sugestão")
             let embed = new Discord.EmbedBuilder()
-            .setColor("Random")
-            .setAuthor({name: interaction.user,username, iconURL: interaction.user.displayAvatarURL({dynamic: true})})
-            .setThumbnail(interaction.guild.iconURL({dynamic: true}))
-            .setTitle("Nova sugestão!")
-            .setDescription(`Sugestão de ${interaction.user}:\n**${sugestao}**`)
+                .setColor("Random")
+                .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
+                .setTitle("Nova sugestão!")
+                .setDescription(`Sugestão de ${interaction.user}:\n**${sugestao}**`)
 
-            canal.send({embeds: [embed]}).then(() =>{
-                interaction.reply({content: `Olá ${interaction.user}, sua sugestão foi publicada no canal ${canal} com sucesso!`})
+            canal.send({ embeds: [embed] }).then(() => {
+                interaction.reply({ content: `Olá ${interaction.user}, sua sugestão foi publicada no canal ${canal} com sucesso!` })
             }).catch(() => {
-                interaction.reply({content: `Ops ${interaction.user}, algo deu errado!`})
+                interaction.reply({ content: `Ops ${interaction.user}, algo deu errado!` })
             })
         }
     }
