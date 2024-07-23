@@ -15,15 +15,14 @@ client.on("interactionCreate", async (interaction) => {
 
             const pergunta1 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta1")
-                .setLabel("Descreva sua relação com os outros membros ?")
+                .setLabel("Descreva sua relação com os outros membros.")
                 .setPlaceholder("Ex: Legal, boa, chata, ruim...")
                 .setRequired(true)
                 .setStyle(Discord.TextInputStyle.Paragraph)
 
             const pergunta2 = new Discord.TextInputBuilder()
                 .setCustomId("pergunta2")
-                .setLabel("Oque você acha do Dono do servidor? (Gypcoom)")
-      
+                .setLabel("Oque você acha do dono do servidor? (Gypcoom)")
                 .setPlaceholder("Ex: É um cara legal, meio chato, muito engraçado...")
                 .setStyle(Discord.TextInputStyle.Paragraph)
 
@@ -59,22 +58,22 @@ client.on("interactionCreate", async (interaction) => {
                 .setDescription(`O usuário ${interaction.user}, enviou o formulário abaixo:`)
                 .addFields(
                     {
-                        name: `Pergunta 1`,
-                        value: `*Resposta 1:* \`${resposta1}\`.`,
+                        name: `Descreva sua relação com os outros membros.`,
+                        value: `*Resposta:* \`${resposta1}\`.`,
                         inline: false,
                     },
                     {
-                        name: `Pergunta 2`,
-                        value: `*Resposta 2:* \`${resposta2}\`.`,
+                        name: `Oque você acha do dono do servidor? (Gypcoom)`,
+                        value: `*Resposta:* \`${resposta2}\`.`,
                         inline: false,
                     },
                     {
-                        name: `Pergunta 3`,
-                        value: `*Resposta 3:* \`${resposta3}\`.`,
+                        name: `Como está sendo sua experiência com o server?`,
+                        value: `*Resposta:* \`${resposta3}\`.`,
                         inline: false
                     },
                 )
-            interaction.reply({ content: `Olá **${interaction.user.username}**, seu formulário foi enviado com sucesso!`, ephemeral: true })
+            interaction.reply({ content: `Olá **${interaction.user}**, seu formulário foi enviado com sucesso!`, ephemeral: true })
             await interaction.guild.channels.cache.get(await db.get(`canal_logs_${interaction.guild.id}`)).send({ embeds: [embed] })
         }
     }

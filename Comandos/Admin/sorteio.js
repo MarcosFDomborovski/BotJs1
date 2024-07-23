@@ -78,7 +78,7 @@ module.exports = {
 
     run: async (client, interaction) => {
         if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageGuild)) {
-            interaction.reply({content:`Você não possui permissão para utilizar este comando!`, ephemeral: true})
+            interaction.reply({ content: `Você não possui permissão para utilizar este comando!`, ephemeral: true })
         } else {
             let premio = interaction.options.getString("prêmio");
             let tempo = interaction.options.getString("tempo");
@@ -102,8 +102,8 @@ module.exports = {
                 .setColor("Random")
 
             let erro = new Discord.EmbedBuilder()
-                .setColor("Random")
-                .setDescription(`Não foi possível realizar o sorteio!`)
+                .setColor("Red")
+                .setDescription(`❌ Não foi possível realizar o sorteio! ❌`)
 
             const msg = await interaction.reply({ embeds: [embed], components: [botao] }).catch((e) => {
                 interaction.reply({ embeds: [erro] })
@@ -142,7 +142,15 @@ module.exports = {
 
                 if (click.length == 0) return interaction.followUp(`**SORTEIO CANCELADO**\nNão houveram participantes no sorteio \`${premio}\`.`)
 
-                interaction.followUp(`🥳🎉  Parabéns <@${ganhador}> você ganhou **${premio}**  🎉🥳`)
+                interaction.followUp({
+                    embeds: [
+                        new Discord.EmbedBuilder()
+                            .setTitle(`🎉🥳 Temos um(a) ganhador(a)! 🥳🎉`)
+                            .setColor("Yellow")
+                            .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                            .setDescription(`> __Vencedor:__  ${ganhador}\nParabéns!! Você foi sorteado(a) e ganhou um(a) ${premio}`)
+                    ]
+                })
             }, duracao)
         }
     }

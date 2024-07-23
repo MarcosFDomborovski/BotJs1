@@ -13,7 +13,7 @@ client.on("messageCreate", async (message) => {
         await db.delete(`modo_afk_${message.author.id}`)
         await db.delete(`motivo_afk_${message.author.id}`)
     }
-
+    if (!message.mentions.members) return;
     let afk_user = message.mentions.members.first()
     if (!afk_user) return;
 

@@ -6,11 +6,10 @@ module.exports = {
     type: Discord.ApplicationCommandType.ChatInput,
 
     run: async (client, interaction) => {
-
         let embedPainel = new Discord.EmbedBuilder()
             .setColor("Aqua")
             .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos interagindo com o painel abaixo:`)
+            .setDescription(`Olá ${interaction.user}, veja meus comandos interagindo com o painel abaixo:`);
 
         let embedUtilidade = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -24,14 +23,14 @@ module.exports = {
             .addFields({ name: `/serverinfo`, value: `Envia informações sobre o servidor.` })
             .addFields({ name: `/sugerir`, value: `Faça sua sugestão.` })
             .addFields({ name: `/transcript`, value: `Transcreva todas as mensagens de um canal para um arquivo html.` })
-            .addFields({ name: `/userinfo`, value: `Veja as informações de um usuário.` })
+            .addFields({ name: `/userinfo`, value: `Veja as informações de um usuário.` });
 
         let embedEconomia = new Discord.EmbedBuilder()
             .setColor("Aqua")
             .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
             .setDescription(`Olá ${interaction.user}, veja meus comandos de **economia** abaixo:`)
             .addFields({ name: `/carteira`, value: `Veja a quantidade de moedas que você tem na carteira.` })
-            .addFields({ name: `/daily`, value: `Resgate suas moedas diárias.` })
+            .addFields({ name: `/daily`, value: `Resgate suas moedas diárias.` });
 
         let embedDiversao = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -43,7 +42,7 @@ module.exports = {
             .addFields({ name: `/d12`, value: `Role um dado de 12 lados.` })
             .addFields({ name: `/d20`, value: `Role um dado de 20 lados.` })
             .addFields({ name: `/hug`, value: `Abrace um membro.` })
-            .addFields({ name: `/slap`, value: `Dê um tapa em uma pessoa.` })
+            .addFields({ name: `/slap`, value: `Dê um tapa em uma pessoa.` });
 
         let embedAdm = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -67,64 +66,51 @@ module.exports = {
             .addFields({ name: `/tickets`, value: `Ative o sistema de tickets no servidor.` })
             .addFields({ name: `/desban`, value: `Desbana um membro do servidor.` })
             .addFields({ name: `/unlock`, value: `Desbloqueie um canal.` })
-            .addFields({ name: `/video`, value: `Armazenar um vídeo.` })
+            .addFields({ name: `/video`, value: `Armazenar um vídeo.` });
 
         let painel = new Discord.ActionRowBuilder().addComponents(
-            new Discord.SelectMenuBuilder()
+            new Discord.StringSelectMenuBuilder()
                 .setCustomId("painelTicket")
                 .setPlaceholder("CLique aqui!")
-                .addOptions({
-                    label: "Painel Inicial",
-                    emoji: "📚",
-                    value: "painel",
-                },
-                    {
-                        label: "Utilidade",
-                        description: "Veja meus comandos de utilidade.",
-                        emoji: "✨",
-                        value: "utilidade",
+                .addOptions([
+                    { label: "Painel Inicial", emoji: "📚", value: "painel" },
+                    { label: "Utilidade", description: "Veja meus comandos de utilidade.", emoji: "✨", value: "utilidade" },
+                    { label: "Diversão", description: "Veja meus comandos de diversão.", emoji: "😂", value: "diversao" },
+                    { label: "Economia", description: "Veja meus comandos de economia.", emoji: "💰", value: "economia" },
+                    { label: "Administração", description: "Veja meus comandos de administração.", emoji: "🛠", value: "adm" }
+                ])
+        );
 
-                    },
-                    {
-                        label: "Diversão",
-                        description: "Veja meus comandos de diversão.",
-                        emoji: "😂",
-                        value: "diversao",
-                    },
-                    {
-                        label: "Economia",
-                        description: "Veja meus comandos de economia.",
-                        emoji: "💰",
-                        value: "economia",
-                    },
-                    {
-                        label: "Administração",
-                        description: "Veja meus comandos de administração.",
-                        emoji: "🛠",
-                        value: "adm",
-                    }
-                ))
-        interaction.reply({ embeds: [embedPainel], components: [painel], ephemeral: true }).then(() => {
-            interaction.channel.createMessageComponentCollector().on("collect", (c) => {
+        await interaction.reply({ embeds: [embedPainel], components: [painel], ephemeral: true });
+
+        const filter = i => i.customId === 'painelTicket' && i.user.id === interaction.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+
+        collector.on("collect", async c => {
+            try {
+                if (!c.values || c.values.length === 0) return;
+
                 let valor = c.values[0];
+                await c.deferUpdate();
 
                 if (valor === "painel") {
-                    c.deferUpdate();
-                    interaction.editReply({ embeds: [embedPainel] })
+                    await interaction.editReply({ embeds: [embedPainel] });
                 } else if (valor === "utilidade") {
-                    c.deferUpdate();
-                    interaction.editReply({ embeds: [embedUtilidade] })
+                    await interaction.editReply({ embeds: [embedUtilidade] });
                 } else if (valor === "diversao") {
-                    c.deferUpdate();
-                    interaction.editReply({ embeds: [embedDiversao] })
+                    await interaction.editReply({ embeds: [embedDiversao] });
                 } else if (valor === "economia") {
-                    c.deferUpdate();
-                    interaction.editReply({ embeds: [embedEconomia] })
+                    await interaction.editReply({ embeds: [embedEconomia] });
                 } else if (valor === "adm") {
-                    c.deferUpdate();
-                    interaction.editReply({ embeds: [embedAdm] })
+                    await interaction.editReply({ embeds: [embedAdm] });
                 }
-            })
-        })
+            } catch (error) {
+                console.error('Erro ao processar a interação:', error);
+            }
+        });
+
+        collector.on("end", collected => {
+            console.log(`Coletor terminou com ${collected.size} interações coletadas. (/help)`);
+        });
     }
-}
+};

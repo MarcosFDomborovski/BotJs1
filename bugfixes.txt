@@ -1,45 +1,16 @@
 **FIXED** /clear quebra o bot caso o numero de mensagens que o usuario deseja apagar seja maior que o total de mensagens no chat. 
 
 /dm Caso o usuario interaja com o bot no DM, o bot quebra
-            ^
+ - Consertado, causado quando certa propriedade que envolva mensagens, seja nulo ou undefined. Solução, fazer o bot retornar caso essa propriedade seja nula.
 
-DiscordAPIError[10062]: Unknown interaction
-    at handleErrors (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:730:13)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async BurstHandler.runRequest (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:835:23)
-    at async _REST.request (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:1278:22)
-  requestBody: { files: undefined, json: { type: 6 } },
-  rawError: { message: 'Unknown interaction', code: 10062 },
-  code: 10062,
-  status: 404,
-  method: 'POST',
-  url: 'https://discord.com/api/v10/interactions/1264767263446142997/aW50ZXJhY3Rpb246MTI2NDc2NzI2MzQ0NjE0Mjk5NzpSTE1nN0k5dWZoUG42MW5BRWR0cHdlWFBJZUtzZ3FNUUVJcGphSTdBYjlLRElzelhFWTBXWHJoVjI5QmZRaFplQU9BTlFjQUR2bUo3SFNWVmZsaGZoRFRySWpSd0hPcEJJcEI5bVBlb3pxVk1pbEwwUllrSXB2TWs0UWJQMzNLYg/callback'
+DiscordAPIError[10062]: Unknown interaction 
+ - Causado por demorar demais. Possível correção é utilizar "await defer.Reply" ou "await defer.editReply".
 
-DiscordAPIError[40060]: Interaction has already been acknowledged.
-    at handleErrors (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:730:13)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async BurstHandler.runRequest (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:835:23)
-    at async _REST.request (F:\Codigos\BotJs1\node_modules\@discordjs\rest\dist\index.js:1278:22)
-    at async StringSelectMenuInteraction.deferUpdate (F:\Codigos\BotJs1\node_modules\discord.js\src\structures\interfaces\InteractionResponses.js:203:5) {
-  requestBody: { files: undefined, json: { type: 6 } },
-  rawError: {
-    code: 40060
-  },
-  code: 40060,
-  status: 400,
-  method: 'POST',
-  url: 'https://discord.com/api/v10/interactions/1264766760104493109/aW50ZXJhY3Rpb246MTI2NDc2Njc2MDEwNDQ5MzEwOTphMG9SY2RuQUQwdWg0Z0MxYlRsQXV1U0lwdUs2eWJnM1RwczFKVGh0QnNXZHNOc1RhdEI4UnQyWTdNOVp0OEh6U3RRYWtuVDVwRVZPenlYaFJMRW5qZ05LRk9JZDRsSEdXaHZacFRLVWdlWWVnZ25ZMm11NWRidHl4SmZlUzhiUg/callback'
-}
+DiscordAPIError[40060]: Interaction has already been acknowledged.  
+- Ocorre quando você tenta responder a uma interação do Discord mais de uma vez.
 
-
-node:events:498
-      throw er; // Unhandled 'error' event
-      ^
-TypeError: Cannot read properties of undefined (reading '0')
+TypeError: Cannot read properties of undefined (reading '0') 
+- Ocorreu porque o valor "c.values[0]" era nulo, ou 0, logo o bot crashou. A solução foi inserir "await c.deferUpdate()" para fazer com que o coletor atualize o valor de c.value.
     at InteractionCollector.<anonymous> (F:\Codigos\BotJs1\Comandos\Util\help.js:109:37)
-    at InteractionCollector.emit (node:events:532:35)
-    at InteractionCollector.handleCollect (F:\Codigos\BotJs1\node_modules\discord.js\src\structures\interfaces\Collector.js:133:14)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-Emitted 'error' event on Client instance at:
-    at emitUnhandledRejectionOrErr (node:events:403:10)
-    at process.processTicksAndRejections (node:internal/process/task_queues:84:21)
+
+    

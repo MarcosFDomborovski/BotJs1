@@ -13,7 +13,7 @@ module.exports = {
         },
         {
             name: "embed",
-            description: "Envia a mensagem em embed",
+            description: "Envie a mensagem em embed",
             type: Discord.ApplicationCommandOptionType.String,
             required: false,
         },
@@ -36,14 +36,15 @@ module.exports = {
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Random")
+                .setTitle(`📬 Mensagem Recebida! 📬`)
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                 .setDescription(`${msgEmbed}`);
 
             if (!msgEmbed) msgEmbed = "⠀";
             if (!msgNormal) msgNormal = "⠀";
-            
+
             if (!msgNormal && !msgEmbed) {
-                interaction.reply({content: `Olá ${interaction.user}, você deve fornecer ao menos uma mensagem!`});
+                interaction.reply({ content: `Olá ${interaction.user}, você deve fornecer ao menos uma mensagem!`, ephemeral: true })
             }
 
             if (msgEmbed === "⠀") {
@@ -51,16 +52,20 @@ module.exports = {
                     user.send(msgNormal);
                     let emb = new Discord.EmbedBuilder()
                         .setColor("Green")
+                        .setTitle(`📨 Mensagem Enviada! 📨`)
+                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                         .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
 
-                    interaction.reply({ embeds: [emb] })
+                    interaction.reply({ embeds: [emb], ephemeral: true })
 
                 } catch (e) {
                     let emb = new Discord.EmbedBuilder()
                         .setColor("Red")
+                        .setTitle(`❌ Algo deu errado! ❌`)
+                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                         .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
 
-                    interaction.reply({ embeds: [emb] })
+                    interaction.reply({ embeds: [emb], ephemeral: true })
                 }
 
             } else if (msgNormal === "⠀") {
@@ -68,19 +73,22 @@ module.exports = {
                     user.send({ embeds: [embed] })
                     let emb = new Discord.EmbedBuilder()
                         .setColor("Green")
+                        .setTitle(`📨 Mensagem Enviada! 📨`)
+                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                         .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
 
-                    interaction.reply({ embeds: [emb] })
+                    interaction.reply({ embeds: [emb], ephemeral: true })
 
                 } catch (e) {
                     let emb = new Discord.EmbedBuilder()
                         .setColor("Red")
+                        .setTitle(`❌ Algo deu errado! ❌`)
+                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                         .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
 
-                    interaction.reply({ embeds: [emb] })
+                    interaction.reply({ embeds: [emb], ephemeral: true })
                 }
             }
         }
-
     }
 }

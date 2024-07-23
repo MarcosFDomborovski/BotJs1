@@ -21,12 +21,12 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let canal_formulario = interaction.options.getChannel("canal_formulário");
-            let canalLogs = interaction.options.getChannel("canal_formulário")
+            let canalLogs = interaction.guild.channels.cache.get("1264342985256992849")
 
             if (canal_formulario.type !== Discord.ChannelType.GuildText) {
                 interaction.reply({ content: `O canal ${canal_formulario} não é um canal de texto!`, ephemeral: true })
 
-            } else if (canalLogs.type !== Discord.ChannelType.GuildText) {
+            } else if (canalLogs.type !== Discord.ChannelType.GuildText && canalLogs.type !== Discord.ChannelType.PrivateThread) {
 
                 interaction.reply({ content: `O canal ${canalLogs} não é um canal de texto!`, ephemeral: true })
 

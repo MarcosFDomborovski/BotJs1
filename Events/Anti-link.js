@@ -5,6 +5,8 @@ const db = new QuickDB()
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
+    if(!message.guild) return;
+    
     let confirm = await db.get(`antilink_${message.guild.id}`);
 
     if (confirm === false || confirm === null) {
