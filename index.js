@@ -52,3 +52,4 @@ fs.readdir('./Events', (err, file) => {
 })
 
 client.userDB = require("./models/user")
+client.userMessages = require("./models/messages")

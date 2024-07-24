@@ -1,4 +1,5 @@
-**FIXED** /clear quebra o bot caso o numero de mensagens que o usuario deseja apagar seja maior que o total de mensagens no chat. 
+/clear quebra o bot caso o numero de mensagens que o usuario deseja apagar seja maior que o total de mensagens no chat. 
+-Consertado.
 
 /dm Caso o usuario interaja com o bot no DM, o bot quebra
  - Consertado, causado quando certa propriedade que envolva mensagens, seja nulo ou undefined. Solução, fazer o bot retornar caso essa propriedade seja nula.

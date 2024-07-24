@@ -5,7 +5,6 @@ module.exports = {
     description: "Veja a quantidade de moedas que você tem na carteira.",
     type: Discord.ApplicationCommandType.ChatInput,
 
-
     run: async (client, interaction) => {
         let userDatabase = await client.userDB.findOne({ discordId: interaction.user.id})
         if(!userDatabase) userDatabase = await client.userDB.create({ discordId: interaction.user.id, username: interaction.user.username })
