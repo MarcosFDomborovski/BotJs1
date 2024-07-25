@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-  discordId: { type: String, required: true },
   username: { type: String, required: true, default: "Usuário" },
-  dinheiro: { type: Number, required: false, default: 0 },
+  discordId: { type: String, required: true },
   mensagens: { type: Number, default: 0 },
+  dinheiro: { type: Number, required: false, default: 0 },
   cooldowns: {
     daily: { type: Number, default: 0 },
   },
@@ -15,4 +15,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("UsuáriosGypcoom", UserSchema);
+module.exports = mongoose.model("Usuarios", UserSchema);

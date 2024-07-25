@@ -1,5 +1,3 @@
-
-require(`../index`)
 const Discord = require("discord.js")
 const client = require('../index')
 const {QuickDB} = require('quick.db')

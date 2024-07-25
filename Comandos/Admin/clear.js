@@ -17,10 +17,9 @@ module.exports = {
   cooldown: 4000,
 
   run: async (client, interaction) => {
-    const userId = interaction.user.id;
-    const now = Date.now();
-    const cooldown = client.cooldowns.get(userId) || 0;
-    const dono = `474334792830156805`;
+    const userId = interaction.user.id
+    const now = Date.now()
+    const cooldown = client.cooldowns.get(userId) || 0
 
     if (now - cooldown < module.exports.cooldown) {
       const remaining = Math.ceil((module.exports.cooldown - (now - cooldown)) / 1000);
@@ -30,11 +29,11 @@ module.exports = {
       setTimeout(async () => {
         try {
           await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [] });
+          reply.delete();
         } catch (error) {
           console.error('Erro ao editar a resposta:', error);
         }
-      }, 5000); 
-
+      }, 4000); 
       return;
     }
 

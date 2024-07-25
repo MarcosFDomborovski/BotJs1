@@ -5,12 +5,9 @@ class Database{
         this.connection = null;
     }
     connect(){
-        const mongo_url = "mongodb+srv://d4rknorris:lrGAdGrITE6RZkvN@bot-pastelaria.kmrif4b.mongodb.net/?retryWrites=true&w=majority&appName=bot-pastelaria"
+        const mongo_url = "mongodb+srv://d4rknorris:lrGAdGrITE6RZkvN@bot-pastelaria.kmrif4b.mongodb.net/Pastelaria-Gypcoom?retryWrites=true&w=majority&appName=bot-pastelaria"
         console.log("Tentando se conectar com o banco de dados...")
-        mongoose.connect(mongo_url, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        }).then(() =>{
+        mongoose.connect(mongo_url).then(() =>{
             console.log("✅ Conectado ao MongoDB com sucesso!")
             this.connection = mongoose.connection;
         }).catch(err =>{

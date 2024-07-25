@@ -34,4 +34,4 @@ let embed = new Discord.EmbedBuilder()
           text: "Data de Finalização:",
           iconURL: 'https://example.com/path_to_luck_icon.png' // Adicione um ícone relevante
       })
-      .setTimestamp(Date.now() + duracao
+      .setTimestamp(Date.now() + duracao)

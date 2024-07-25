@@ -15,7 +15,8 @@ const client = new Discord.Client({
         Discord.IntentsBitField.Flags.MessageContent,
         Discord.IntentsBitField.Flags.Guilds,
         Discord.IntentsBitField.Flags.GuildMessageReactions,
-
+        Discord.IntentsBitField.Flags.GuildVoiceStates,
+        Discord.IntentsBitField.Flags.GuildMessages
     ],
     partials: [
         Discord.Partials.User,
@@ -53,3 +54,4 @@ fs.readdir('./Events', (err, file) => {
 
 client.userDB = require("./models/user")
 client.userMessages = require("./models/messages")
+client.deletedLinks = require("./models/anti-link")

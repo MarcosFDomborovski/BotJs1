@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const MessagesSchema = new mongoose.Schema({
-    discordId: { type: String, required: true},
     username: { type: String, default: 'Usuário' },
+    discordId: { type: String, required: true},
     content: { type: String, required: true },
     channelId: { type: String },
     createdAt: {
@@ -11,4 +11,4 @@ const MessagesSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('Messages', MessagesSchema);
+module.exports = mongoose.model('Mensagens', MessagesSchema);

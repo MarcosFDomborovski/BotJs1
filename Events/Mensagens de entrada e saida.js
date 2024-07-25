@@ -24,7 +24,7 @@ client.on("guildMemberRemove", (member) => {
         .setColor("Red")
         .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
         .setTitle(`👋 Adeus...`)
-        .setDescription(`> O usuãrio ${member} saiu do servidor!\n> Espero que volte algum dia..\n> Nos sobrou apenas \`${member.guild.memberCount}\` membros.`)
+        .setDescription(`> O usuãrio ${member} saiu do servidor!\n> Espero que volte algum dia..\n> Nos sobrou \`${member.guild.memberCount}\` membros.`)
 
     member.guild.channels.cache.get(canalLogs).send({ embeds: [embed], content: `${member}` })
 })

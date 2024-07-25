@@ -10,9 +10,15 @@ module.exports = {
         if(!userDatabase) userDatabase = await client.userDB.create({ discordId: interaction.user.id, username: interaction.user.username })
 
         let embed = new Discord.EmbedBuilder()
-            .setColor("Yellow")
-            .setTitle(`💰 Carteira`)
-            .setDescription(`Olá <@${userDatabase.discordId}>, você possui \`${userDatabase.dinheiro}\` moedas em sua carteira.`)
+        .setColor("#FFD700")
+        .setTitle("💰 Carteira 💰")
+        .setDescription(`Olá <@${userDatabase.discordId}>, aqui estão os detalhes da sua carteira:`)
+        .addFields(
+            { name: "Moedas", value: `\`${userDatabase.dinheiro}\``, inline: true },
+            { name: "Status", value: userDatabase.dinheiro > 0 ? "💵 Ricaço!" : "🚫 Pobre!", inline: true }
+        )
+        .setFooter({ text: "Consulta realizada em:" })  
+        .setTimestamp(Date.now());
 
         await interaction.reply({ embeds: [embed] });
     }
