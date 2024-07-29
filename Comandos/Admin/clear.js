@@ -39,9 +39,6 @@ module.exports = {
 
     client.cooldowns.set(userId, now);
     
-    let membro = await client.userDB.findOne({ discordId: userId });
-    if (!membro) membro = await client.userDB.create({ discordId: userId, username: interaction.user.username });
-
     let numero = interaction.options.getNumber("quantidade");
 
     if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageMessages)) {
