@@ -31,7 +31,12 @@ module.exports = {
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Green")
+                .setTitle(`✖ Membro Expulso! ✖`)
                 .setDescription(`O usuário ${membro} foi expulso com sucesso!\n\nMotivo: \`${motivo}\`.`)
+                .setThumbnail(user.displayAvatarURL({dynamic:true}))
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setFooter({text: `Data da expulsão:`})
+                .setTimestamp(Date.now())
 
             let embed2 = new Discord.EmbedBuilder()
                 .setColor("Red")
@@ -42,18 +47,6 @@ module.exports = {
             }).catch(e => {
                 interaction.reply({ embeds: [embed2] })
             })
-
-
-
-
         }
     }
-
-
-
-
-
-
-
-
 }

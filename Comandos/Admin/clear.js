@@ -24,8 +24,6 @@ module.exports = {
     if (now - cooldown < module.exports.cooldown) {
       const remaining = Math.ceil((module.exports.cooldown - (now - cooldown)) / 1000);
       const reply = await interaction.reply({ content: `Você precisa esperar ${remaining} segundo(s) antes de usar o comando novamente.`, ephemeral: true });
-      
-
       setTimeout(async () => {
         try {
           await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [] });
@@ -33,7 +31,7 @@ module.exports = {
         } catch (error) {
           console.error('Erro ao editar a resposta:', error);
         }
-      }, 4000); 
+      }, remaining); 
       return;
     }
 
@@ -56,7 +54,7 @@ module.exports = {
     }
 
     try {
-      const fetchedMessages = await interaction.channel.messages.fetch({ limit: numero });
+      const fetchedMessages = await interaction.channel.messages.fetch({ limit: numero }); // fetch = buscar
 
       if (fetchedMessages.size === 0) {
         let embed = new Discord.EmbedBuilder()

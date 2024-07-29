@@ -38,7 +38,9 @@ module.exports = {
             let embedVerificacao = new Discord.EmbedBuilder()
             .setColor("Green")
             .setAuthor({name: interaction.guild.name, iconURL: interaction.guild.iconURL({dynamic: true})})
+            .setThumbnail(interaction.guild.iconURL({dynamic: true}))
             .setDescription(`> Clique no botão abaixo para fazer sua verificação no servidor.`)
+            .setTitle(`✅ Faça sua verificação aqui! ✅`)
 
             let botao = new Discord.ActionRowBuilder().addComponents(
                 new Discord.ButtonBuilder()

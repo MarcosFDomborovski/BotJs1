@@ -5,17 +5,17 @@ client.on("messageReactionAdd", (react, user) => {
     if (user.bot) return;
 
     const cores = {
-        azul: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369186307936266"),
-        verde: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369253471191070"),
-        amarelo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369293267009626"),
-        laranja: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369500729610332"),
-        vermelho: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369406072688721"),
-        rosa: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369743542321214"),
-        roxo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369680199942186"),
-        preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369866724573315"),
-        branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369946051706982")
+        azul: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1194294023968522351"),
+        verde: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267451959825403995"),
+        amarelo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452119003435121"),
+        laranja: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452176477851729"),
+        vermelho: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452333424382013"),
+        rosa: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452514358399077"),
+        roxo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452549967904799"),
+        preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452693270495344"),
+        branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452802180059309")
     }
-    if (react.message.channel.id === "1132436579823128676") {
+    if (react.message.channel.id === "1267456048642658365") {
         if (client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith('Cor')))
             client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.remove(client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith("Cor")).id)
 
@@ -91,17 +91,17 @@ client.on("messageReactionRemove", (react, user) => {
     if (user.bot) return;
 
     const cores = {
-        azul: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369186307936266"),
-        verde: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369253471191070"),
-        amarelo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369293267009626"),
-        laranja: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369500729610332"),
-        vermelho: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369406072688721"),
-        rosa: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369743542321214"),
-        roxo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369680199942186"),
-        preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369866724573315"),
-        branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1261369946051706982")
+        azul: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1194294023968522351"),
+        verde: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267451959825403995"),
+        amarelo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452119003435121"),
+        laranja: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452176477851729"),
+        vermelho: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452333424382013"),
+        rosa: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452514358399077"),
+        roxo: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452549967904799"),
+        preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452693270495344"),
+        branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452802180059309")
     }
-    if (react.message.channel.id === "1132436579823128676") {
+    if (react.message.channel.id === "1267456048642658365") {
         if (client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith('Cor')))
             client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.remove(client.guilds.cache.get(react.message.channel.guildId).roles.cache.find(role => role.name.startsWith('Cor')))
 

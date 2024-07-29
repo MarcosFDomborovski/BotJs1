@@ -31,7 +31,12 @@ module.exports = {
 
             let embed = new Discord.EmbedBuilder()
             .setColor("Green")
-            .setDescription(`O usuário ${user} (\`${user.id}\`) foi banido com sucesso!`);
+            .setTitle(`✖ Membro Expulso! ✖`)
+            .setDescription(`O usuário ${membro} foi expulso com sucesso!\n\nMotivo: \`${motivo}\`.`)
+            .setThumbnail(user.displayAvatarURL({dynamic:true}))
+            .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+            .setFooter({text: `Data da expulsão:`})
+            .setTimestamp(Date.now())
 
             let erro = new Discord.EmbedBuilder()
             .setColor("Red")
@@ -42,8 +47,6 @@ module.exports = {
             }).catch( e => {
                 interaction.reply({embeds: [erro]});
             })
-
         }
-
     }
 }

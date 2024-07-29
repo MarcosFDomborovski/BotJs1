@@ -33,15 +33,14 @@ module.exports = {
             let user = interaction.options.getUser("usuário");
             let msgEmbed = interaction.options.getString("embed");
             let msgNormal = interaction.options.getString("normal");
+            if (!msgEmbed) msgEmbed = "⠀";
+            if (!msgNormal) msgNormal = "⠀";
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Random")
                 .setTitle(`📬 Mensagem Recebida! 📬`)
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
                 .setDescription(`${msgEmbed}`);
-
-            if (!msgEmbed) msgEmbed = "⠀";
-            if (!msgNormal) msgNormal = "⠀";
 
             if (!msgNormal && !msgEmbed) {
                 interaction.reply({ content: `Olá ${interaction.user}, você deve fornecer ao menos uma mensagem!`, ephemeral: true })

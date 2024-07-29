@@ -19,6 +19,7 @@ module.exports = {
             interaction.reply({ content: `Você não possui permissão para utilizar este comando.`, ephemeral: true });
         } else {
             const canal = interaction.options.getChannel("canal")
+            if(!canal) canal = interaction.channel
 
             canal.permissionOverwrites.edit(interaction.guild.id, { SendMessages: false }).then(() => {
                 interaction.reply({ content: `🔒 O canal de texto ${canal} foi bloqueado! 🔒` })

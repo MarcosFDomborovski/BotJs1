@@ -11,32 +11,14 @@ module.exports = {
 
     if (userDatabase.cooldowns.daily < Date.now()) {
       const amount = Math.floor(Math.random() * 5000);
-      await client.userDB.updateOne(
-        {
-          discordId: interaction.user.id,
-        },
-        {
-          $inc: {
-            dinheiro: amount,
-          },
-        }
-      );
-      await client.userDB.updateOne(
-        {
-          discordId: interaction.user.id,
-        },
-        {
-          $set: {
-            'cooldowns.daily': Date.now() + 1000 * 60 * 60 * 24,
-          },
-        }
-      );
+      await client.userDB.updateOne({ discordId: interaction.user.id, }, { $inc: { dinheiro: amount }});
+      await client.userDB.updateOne({ discordId: interaction.user.id, }, { $set: { 'cooldowns.daily': Date.now() + 1000 * 60 * 60 * 24} });
       const embed = new Discord.EmbedBuilder()
         .setColor("Green")
-        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
+        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true })})
         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
         .setTitle(`🤑 Moedas Resgatadas! 🤑`)
-        .setDescription(`Parabéns <@${userDatabase.discordId}>! Você resgatou com sucesso ${amount} moedas!`)
+        .setDescription(`Parabéns **<@${userDatabase.discordId}>**! Você resgatou com sucesso **${amount} moedas!**`)
         .setTimestamp(Date.now())
         .setFooter({ text: `Data de resgate:` });
 
@@ -44,8 +26,8 @@ module.exports = {
     } else {
       const embed = new Discord.EmbedBuilder()
         .setColor("Red")
-        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
         .setTitle(`❌ Moedas já resgatadas! ❌`)
+        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true })})
         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
         .setDescription(`Olá <@${userDatabase.discordId}>, você já resgatou suas moedas diárias! Tente novamente <t:${Math.floor(userDatabase.cooldowns.daily / 1000)}:R>!`)
 

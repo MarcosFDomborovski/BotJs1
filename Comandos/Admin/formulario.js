@@ -21,6 +21,7 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let canal_formulario = interaction.options.getChannel("canal_formulário");
+            if(!canal_formulario) canal_formulario = interaction.channel
             let canalLogs = interaction.guild.channels.cache.get("1264342985256992849")
 
             if (canal_formulario.type !== Discord.ChannelType.GuildText) {
