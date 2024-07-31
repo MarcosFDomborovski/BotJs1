@@ -10,7 +10,7 @@ client.on("messageCreate", async (message) => {
     let numberCount = await db.get(`numberCount_${message.channel.id}`)
     if (!numberCount) numberCount = 0;
 
-    if (isNaN(message.content)) return message.reply({ content: `Isso não é um número` }).then(msg => {
+    if (isNaN(message.content)) return message.reply({ content: `Isso não é um número!` }).then(msg => {
         message.react(`❌`)
         setTimeout(() => {
             msg.delete()

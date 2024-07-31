@@ -9,6 +9,7 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.isButton()) {
         if (interaction.customId === "formulario") {
             if (!interaction.guild.channels.cache.get(await db.get(`canal_logs_${interaction.guild.id}`))) return interaction.reply({ content: `O sistema está desativado.`, ephemeral: true })
+                
             const modal = new Discord.ModalBuilder()
                 .setCustomId("modal")
                 .setTitle(`Formulário`);

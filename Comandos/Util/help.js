@@ -1,116 +1,131 @@
-const Discord = require("discord.js");
+const Discord = require('discord.js');
 
 module.exports = {
-    name: "help",
-    description: "Painel de comandos do bot.",
+    name: 'loja',
+    description: 'Exibe a loja de itens.',
     type: Discord.ApplicationCommandType.ChatInput,
 
     run: async (client, interaction) => {
-        let embedPainel = new Discord.EmbedBuilder()
-            .setColor("Aqua")
-            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos interagindo com o painel abaixo:`);
 
-        let embedUtilidade = new Discord.EmbedBuilder()
-            .setColor("Aqua")
-            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos de **utilidade** abaixo:`)
-            .addFields({ name: `/afk`, value: `Ative o modo AFK.` })
-            .addFields({ name: `/avaliação`, value: `Avalie alguém do servidor.` })
-            .addFields({ name: `/botinfo`, value: `Fornece informações sobre o bot` })
-            .addFields({ name: `/mensagens`, value: `Contador de mensagens.` })
-            .addFields({ name: `/registrar`, value: `Registre-se no servidor.` })
-            .addFields({ name: `/serverinfo`, value: `Envia informações sobre o servidor.` })
-            .addFields({ name: `/sugerir`, value: `Faça sua sugestão.` })
-            .addFields({ name: `/transcript`, value: `Transcreva todas as mensagens de um canal para um arquivo html.` })
-            .addFields({ name: `/userinfo`, value: `Veja as informações de um usuário.` });
+        const categorias = {
+            'armas': 
+            [
+                { nome: 'Espada de Fogo', descricao: 'Uma espada encantada com o poder do fogo.', preco: 100, emoji: '🔥', customId: 'comprar_espada' },
+                { nome: 'Escudo de Gelo', descricao: 'Um escudo forte com o poder de gelo.', preco: 150, emoji: '❄️', customId: 'comprar_escudo' }
+            ],
+            'pocoes': 
+            [
+                { nome: 'Poção de Cura', descricao: 'Uma poção mágica que restaura a saúde.', preco: 50, emoji: '🧪', customId: 'comprar_pocao' }
+            ],
+            'armaduras': 
+            [
+                { nome: 'Elmo de Ferro', descricao: 'Um elmo resistente feito de ferro.', preco: 80, emoji: '🪖', customId: 'comprar_elmo' },
+                { nome: 'Botas de Velocidade', descricao: 'Botas que aumentam a velocidade de quem as usa.', preco: 120, emoji: '👟', customId: 'comprar_botas' }
+            ]
+        };
 
-        let embedEconomia = new Discord.EmbedBuilder()
-            .setColor("Aqua")
-            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos de **economia** abaixo:`)
-            .addFields({ name: `/carteira`, value: `Veja a quantidade de moedas que você tem na carteira.` })
-            .addFields({ name: `/daily`, value: `Resgate suas moedas diárias.` });
+        const categoryOptions = [
+            { label: 'Armas', description: 'Veja os itens disponíveis na loja de armas.', emoji: '⚔️', value: 'armas' },
+            { label: 'Poções', description: 'Veja as poções disponíveis na loja.', emoji: '🧪', value: 'pocoes' },
+            { label: 'Armaduras', description: 'Veja as armaduras disponíveis na loja.', emoji: '🛡️', value: 'armaduras' }
+        ];
 
-        let embedDiversao = new Discord.EmbedBuilder()
-            .setColor("Aqua")
-            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos de **diversão** abaixo:`)
-            .addFields({ name: `/d4`, value: `Role um dado de 4 lados.` })
-            .addFields({ name: `/d6`, value: `Role um dado de 6 lados.` })
-            .addFields({ name: `/d10`, value: `Role um dado de 10 lados.` })
-            .addFields({ name: `/d12`, value: `Role um dado de 12 lados.` })
-            .addFields({ name: `/d20`, value: `Role um dado de 20 lados.` })
-            .addFields({ name: `/hug`, value: `Abrace um membro.` })
-            .addFields({ name: `/slap`, value: `Dê um tapa em uma pessoa.` });
+        const createCategoryMenu = () => {
+            return new Discord.ActionRowBuilder().addComponents(
+                new Discord.StringSelectMenuBuilder()
+                    .setCustomId('select_category')
+                    .setPlaceholder('Escolha uma categoria')
+                    .addOptions(categoryOptions)
+            );
+        };
 
-        let embedAdm = new Discord.EmbedBuilder()
-            .setColor("Aqua")
-            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos de **administração** abaixo:`)
-            .addFields({ name: `/antilink`, value: `Ative ou desative o sistema de antilink no servidor.` })
-            .addFields({ name: `/anunciar`, value: `Anuncie algo em uma embed.` })
-            .addFields({ name: `/ban`, value: `Bana um membro do servidor.` })
-            .addFields({ name: `/cargo_botao`, value: `Ganhe cargos clicando nos botões.` })
-            .addFields({ name: `/clear`, value: `Limpe o chat.` })
-            .addFields({ name: `/cores`, value: `Abra o painel de seleção de cores do nick.` })
-            .addFields({ name: `/dm`, value: `Envie uma mensagem no privado de um usuário.` })
-            .addFields({ name: `/enquete`, value: `Crie uma enquete no servidor.` })
-            .addFields({ name: `/formulário`, value: `Abra o painel do formulário para os membros.` })
-            .addFields({ name: `/kick`, value: `Expulse um membro do servidor.` })
-            .addFields({ name: `/lock`, value: `Bloqueie um canal.` })
-            .addFields({ name: `/say`, value: `Faça o bot dizer algo.` })
-            .addFields({ name: `/setnick`, value: `Configura o nickname de um usuário no servidor.` })
-            .addFields({ name: `/slowmode`, value: `Configure o modo lento em um canal de texto.` })
-            .addFields({ name: `/sorteio`, value: `Crie um sorteio no servidor.` })
-            .addFields({ name: `/tickets`, value: `Ative o sistema de tickets no servidor.` })
-            .addFields({ name: `/desban`, value: `Desbana um membro do servidor.` })
-            .addFields({ name: `/unlock`, value: `Desbloqueie um canal.` })
-            .addFields({ name: `/video`, value: `Armazenar um vídeo.` });
+        const createItemMenu = (categoria) => {
+            const items = categorias[categoria];
+            return new Discord.ActionRowBuilder().addComponents(
+                new Discord.StringSelectMenuBuilder()
+                    .setCustomId('select_item')
+                    .setPlaceholder('Escolha um item para comprar')
+                    .addOptions(items.map(item => ({
+                        label: item.nome,
+                        description: item.descricao,
+                        value: item.customId,
+                        emoji: item.emoji
+                    })))
+            );
+        };
 
-        let painel = new Discord.ActionRowBuilder().addComponents(
-            new Discord.StringSelectMenuBuilder()
-                .setCustomId("painelTicket")
-                .setPlaceholder("CLique aqui!")
-                .addOptions([
-                    { label: "Painel Inicial", emoji: "📚", value: "painel" },
-                    { label: "Utilidade", description: "Veja meus comandos de utilidade.", emoji: "✨", value: "utilidade" },
-                    { label: "Diversão", description: "Veja meus comandos de diversão.", emoji: "😂", value: "diversao" },
-                    { label: "Economia", description: "Veja meus comandos de economia.", emoji: "💰", value: "economia" },
-                    { label: "Administração", description: "Veja meus comandos de administração.", emoji: "🛠", value: "adm" }
-                ])
-        );
+        const createConfirmationEmbed = (item) => {
+            return new Discord.EmbedBuilder()
+                .setColor('Yellow')
+                .setTitle('Confirmar Compra')
+                .setDescription(`Você está prestes a comprar **${item.nome}** por **${item.preco} moedas**.\nDeseja confirmar?`)
+                .setThumbnail(item.emoji);
+        };
 
-        await interaction.reply({ embeds: [embedPainel], components: [painel], ephemeral: true });
+        const initialEmbed = new Discord.EmbedBuilder()
+            .setColor('Random')
+            .setTitle('🛒 Loja de Itens')
+            .setDescription('Escolha uma categoria abaixo para explorar os itens.')
+            .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
 
-        const filter = i => i.customId === 'painelTicket' && i.user.id === interaction.user.id;
+        await interaction.reply({ embeds: [initialEmbed], components: [createCategoryMenu()] });
+
+        const filter = i => i.user.id === interaction.user.id;
+
+        // Coletor de interações para categorias e itens
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
 
-        collector.on("collect", async c => {
-            try {
-                if (!c.values || c.values.length === 0) return;
+        collector.on('collect', async i => {
+            if (i.customId === 'select_category') {
+                const selectedCategory = i.values[0];
+                const itemMenu = createItemMenu(selectedCategory);
+                const embed = new Discord.EmbedBuilder()
+                    .setColor('Random')
+                    .setTitle('🛒 Loja de Itens')
+                    .setDescription('Escolha um item para comprar na categoria selecionada.')
+                    .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
 
-                let valor = c.values[0];
-                await c.deferUpdate();
+                await i.update({ embeds: [embed], components: [itemMenu] });
 
-                if (valor === "painel") {
-                    await interaction.editReply({ embeds: [embedPainel] });
-                } else if (valor === "utilidade") {
-                    await interaction.editReply({ embeds: [embedUtilidade] });
-                } else if (valor === "diversao") {
-                    await interaction.editReply({ embeds: [embedDiversao] });
-                } else if (valor === "economia") {
-                    await interaction.editReply({ embeds: [embedEconomia] });
-                } else if (valor === "adm") {
-                    await interaction.editReply({ embeds: [embedAdm] });
-                }
-            } catch (error) {
-                console.error('Erro ao processar a interação:', error);
+            } else if (i.customId === 'select_item') {
+                const selectedItem = Object.values(categorias).flat().find(item => item.customId === i.values[0]);
+
+                const confirmationButtons = new Discord.ActionRowBuilder()
+                    .addComponents(
+                        new Discord.ButtonBuilder()
+                            .setCustomId('confirmar_compra')
+                            .setLabel('Confirmar')
+                            .setStyle(Discord.ButtonStyle.Success),
+                        new Discord.ButtonBuilder()
+                            .setCustomId('cancelar_compra')
+                            .setLabel('Cancelar')
+                            .setStyle(Discord.ButtonStyle.Danger)
+                    );
+
+                const confirmEmbed = createConfirmationEmbed(selectedItem);
+                await i.update({ embeds: [confirmEmbed], components: [confirmationButtons] });
+
+                const confirmFilter = buttonInteraction => ['confirmar_compra', 'cancelar_compra'].includes(buttonInteraction.customId) && buttonInteraction.user.id === interaction.user.id;
+                const confirmCollector = interaction.channel.createMessageComponentCollector({ filter: confirmFilter, time: 15000 });
+
+                confirmCollector.on('collect', async buttonInteraction => {
+                    if (buttonInteraction.customId === 'confirmar_compra') {
+                        // Lógica para confirmar a compra e debitar moedas do usuário
+                        await buttonInteraction.update({ content: `Você comprou **${selectedItem.nome}**!`, embeds: [], components: [] });
+                    } else if (buttonInteraction.customId === 'cancelar_compra') {
+                        await buttonInteraction.update({ content: 'Compra cancelada.', embeds: [], components: [] });
+                    }
+                });
+
+                confirmCollector.on('end', collected => {
+                    console.log(`Coletor de confirmação terminou com ${collected.size} interações coletadas.`);
+                });
+
             }
         });
 
-        collector.on("end", collected => {
-            console.log(`Coletor terminou com ${collected.size} interações coletadas. (/help)`);
+        collector.on('end', collected => {
+            console.log(`Coletor terminou com ${collected.size} interações coletadas.`);
         });
     }
 };
