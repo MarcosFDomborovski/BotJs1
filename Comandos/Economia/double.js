@@ -3,7 +3,7 @@ const User = require('../../models/user')
 
 module.exports = {
     name: 'double',
-    description: 'Double or nothing!',
+    description: 'Double or nothing! (50% de chance para duplicar sua aposta!)',
     type: Discord.ApplicationCommandType.ChatInput,
     options: [
         {
@@ -41,8 +41,8 @@ module.exports = {
                     .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                     .setColor("Green")
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
-                    .setTitle(`🤑 Algo estranho ocorreu! 🤑`)
-                    .setDescription(`Olá ${interaction.user}, você apostou **${moedas} moedas**, e **ganhou ${amountWon} moedas**!`)
+                    .setTitle(`🤑 Algo inesperado ocorreu! 🤑`)
+                    .setDescription(`O usuário ${interaction.user} apostou **${moedas} moedas**, e **ganhou ${amountWon} moedas**!`)
                     .setFooter({ text: `Data de resgate:` })
                     .setTimestamp(Date.now())
                     .setFields(

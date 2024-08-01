@@ -3,7 +3,7 @@ const User = require('../../models/user')
 
 module.exports = {
     name: 'triple',
-    description: 'Triple or nothing!',
+    description: 'Triple or nothing! (33% de chance para triplicar sua aposta!)',
     type: Discord.ApplicationCommandType.ChatInput,
     options: [
         {

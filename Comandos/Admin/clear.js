@@ -14,12 +14,12 @@ module.exports = {
       required: true,
     },
   ],
-  cooldown: 4000,
+  cooldown: 5000,
 
   run: async (client, interaction) => {
-    const userId = interaction.user.id
-    const now = Date.now()
-    const cooldown = client.cooldowns.get(userId) || 0
+    const userId = interaction.user.id;
+    const now = Date.now();
+    const cooldown = client.cooldowns.get(userId) || 0;
 
     if (now - cooldown < module.exports.cooldown) {
       const remaining = Math.ceil((module.exports.cooldown - (now - cooldown)) / 1000);
@@ -31,7 +31,7 @@ module.exports = {
         } catch (error) {
           console.error('Erro ao editar a resposta:', error);
         }
-      }, remaining); 
+      }, remaining * 1000); 
       return;
     }
 
@@ -54,7 +54,7 @@ module.exports = {
     }
 
     try {
-      const fetchedMessages = await interaction.channel.messages.fetch({ limit: numero }); // fetch = buscar
+      const fetchedMessages = await interaction.channel.messages.fetch({ limit: numero });
 
       if (fetchedMessages.size === 0) {
         let embed = new Discord.EmbedBuilder()
@@ -63,7 +63,7 @@ module.exports = {
         return interaction.reply({ embeds: [embed], ephemeral: true });
       }
 
-      await interaction.channel.bulkDelete(fetchedMessages, true);
+      const deletedMessages = await interaction.channel.bulkDelete(fetchedMessages, true);
 
       let embed = new Discord.EmbedBuilder()
         .setColor("Green")
@@ -71,7 +71,7 @@ module.exports = {
           name: interaction.guild.name,
           iconURL: interaction.guild.iconURL({ dynamic: true })
         })
-        .setDescription(`O canal de texto ${interaction.channel} teve \`${fetchedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`);
+        .setDescription(`O canal de texto ${interaction.channel} teve \`${deletedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`);
       const reply = await interaction.reply({ embeds: [embed] });
 
       setTimeout(async () => {

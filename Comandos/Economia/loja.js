@@ -142,10 +142,9 @@ module.exports = {
                                     return;
                                 } else {
                                     membro.dinheiro -= selectedItem.preco
-
                                     let embed = new Discord.EmbedBuilder()
                                         .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                                        .setColor('Red')
+                                        .setColor('Green')
                                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                                         .setTitle('✅ Compra Efetuada! ✅')
                                         .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**!`)
@@ -163,9 +162,9 @@ module.exports = {
                                                 inline: false,
                                             }
                                         )
-                                        await buttonInteraction.deferUpdate();
-                                        await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true });
-                                        return;
+                                    await buttonInteraction.deferUpdate();
+                                    await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true });
+                                    return;
                                 }
                             } else if (buttonInteraction.customId === 'cancelar_compra') {
                                 await buttonInteraction.deferUpdate({ content: 'Compra cancelada.', embeds: [], components: [] });
