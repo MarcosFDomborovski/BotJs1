@@ -24,15 +24,16 @@ module.exports = {
                 { nome: 'Promoção', descricao: 'Solicitar uma promoção!', preco: 1000, emoji: '🧪', customId: 'promocao_membro' },
                 { nome: 'Troca de cargos', descricao: 'Trocar o cargo atual por outro', preco: 2500, emoji: '🧪', customId: 'troca_cargo' }
             ],
-            '': [
-                { nome: 'Elmo de Ferro', descricao: 'Um elmo resistente feito de ferro.', preco: 80, emoji: '🪖', customId: 'comprar_elmo' },
-                { nome: 'Botas de Velocidade', descricao: 'Botas que aumentam a velocidade de quem as usa.', preco: 120, emoji: '👟', customId: 'comprar_botas' }
+            'punicao': [
+                { nome: 'Punição', descricao: 'Puna um usuário por 1 dia, proibindo ele de usar canais de voz', preco: 880, emoji: '🚫', customId: 'punish_user' },
+                // { nome: 'Botas de Velocidade', descricao: 'Botas que aumentam a velocidade de quem as usa.', preco: 120, emoji: '👟', customId: 'comprar_botas' }
             ]
         };
 
         const categoryOptions = [
             { label: 'Canais de Voz', description: 'Veja os itens disponíveis relacionados a canais de voz.', emoji: '🔊', value: 'chatvoz' },
             { label: 'Cargos', description: 'Veja as opções disponíveis relacionado aos cargos.', emoji: '🧪', value: 'cargos' },
+            { label: 'Punição', description: 'Veja os tipos de punições disponíveis para aplicar a um usuário.', emoji: '⛔', value: 'punicao' },
         ];
 
         const createCategoryMenu = () => {
@@ -143,14 +144,29 @@ module.exports = {
 
                                 } else {
                                     // MODAL
-                                    if (['mute_membro5', 'mute_membro10', 'disconnect_membro', 'deafen_membro', 'troca_cargo'].includes(selectedItem.customId)) {
+                                    if (selectedItem.customId === 'punish_user') {
+                                        const modal = new Discord.ModalBuilder()
+                                            .setCustomId('modal_' + selectedItem.customId)
+                                            .setTitle('Informações Obrigatórias para o funcionamento');
+
+                                        const textInput = new Discord.TextInputBuilder()
+                                            .setCustomId('usuarioAlvo')
+                                            .setLabel(`Digite o ID do Discord do usuário alvo.`)
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                            .setRequired(true);
+
+                                        modal.addComponents(new Discord.ActionRowBuilder().addComponents(textInput));
+
+                                        await buttonInteraction.showModal(modal);
+
+                                    } else if (['mute_membro5', 'mute_membro10', 'disconnect_membro', 'deafen_membro', 'troca_cargo'].includes(selectedItem.customId)) {
                                         const modal = new Discord.ModalBuilder()
                                             .setCustomId('modal_' + selectedItem.customId)
                                             .setTitle('Informações Adicionais');
 
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
-                                            .setLabel(`Em quem ? ${selectedItem.nome} ?`)
+                                            .setLabel(`${selectedItem.nome} Em quem/qual ?`)
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -235,8 +251,39 @@ client.on('interactionCreate', async interaction => {
     let membro = await User.findOne({ discordId: interaction.user.id });
     if (!membro) membro = new User({ discordId: interaction.user.id, username: interaction.user.username });
 
+
+
     // Check if the interaction is from the correct modal
     if (modalId.startsWith('modal_')) {
+        if (modalId.endsWith('punish_user')) {
+            const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
+            const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
+            const member = interaction.guild.members.cache.find(m => m.user.id === targetUser);
+            if (member) {
+                console.log(13123321)
+                const cargoCastigo = interaction.guild.roles.cache.get('1269001666632487044').id
+                member.roles.add(cargoCastigo)
+
+                interaction.deferReply();
+                interaction.reply({ content: `O usuário <@${targetUser}> foi punido!`, ephemeral: true });
+                console.log('entrou')
+                setTimeout(() => {
+                    member.roles.remove(cargoCastigo);
+                    console.log("saiu")
+                }, 8000);
+            } else if (!member || member === undefined || member === null) return;
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
+        } else {
+            console.log('deu ruim pra krl')
+            return;
+        }
+
+
+
+
+
         const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
         const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
         let member = await interaction.guild.members.fetch(dono);
