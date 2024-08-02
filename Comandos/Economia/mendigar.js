@@ -37,7 +37,7 @@ module.exports = {
         let didWin = Math.random() > 0.55;
 
         let amount = Number((70 * (Math.random() + 0.55)).toFixed(0));
-        let amountLoss = Number((45 * (Math.random() + 0.55)).toFixed(0));
+        let amountLoss = Number((60 * (Math.random() + 0.55)).toFixed(0));
 
         if (didWin) {
             user.dinheiro += amount;
@@ -47,7 +47,7 @@ module.exports = {
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor("Green")
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                .setDescription(`${dialogosWin[randomW]} **+ ${amount} moedas.**`)
+                .setDescription(`${dialogosWin[randomW]} \n**+ ${amount} moedas.**`)
                 .setFooter({ text: `Data de resgate:` })
                 .setTimestamp(Date.now())
                 .setFields(
@@ -68,12 +68,11 @@ module.exports = {
                 let maxLoss = Math.min(amountLoss, user.dinheiro); // Garantir que a perda não seja maior que o saldo
 
                 user.dinheiro -= maxLoss;
-                console.log(maxLoss)
                 let embed = new Discord.EmbedBuilder()
                     .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                     .setColor("Red")
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                    .setDescription(`${dialogoLoseM[randomLoseM]} **- ${maxLoss} moedas.**`)
+                    .setDescription(`${dialogoLoseM[randomLoseM]} \n**- ${maxLoss} moedas.**`)
                     .setFooter({ text: `Data:` })
                     .setTimestamp(Date.now())
                     .setFields(
