@@ -28,7 +28,7 @@ client.on("messageCreate", async (message) => {
                     url: `${linkContent}`
                 })
                 message.delete()
-                message.channel.send(`${message.author}, você não pode enviar links neste chat!`)
+                message.channel.send({content: `${message.author}, você não pode enviar links neste chat!`, ephemeral: true})
             }
         } catch (err) {
             console.error(`Erro ao salvar link de ${message.author.username} no canal ${message.channel.name}`, err)

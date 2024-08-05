@@ -21,7 +21,7 @@ module.exports = {
             interaction.reply({ content: `Você não tem permissão para utilizar este comando.`, ephemeral: true });
         } else {
             let canal_formulario = interaction.options.getChannel("canal_formulário");
-            if(!canal_formulario) canal_formulario = interaction.channel
+            if (!canal_formulario) canal_formulario = interaction.channel
             let canalLogs = interaction.guild.channels.cache.get("1264342985256992849")
 
             if (canal_formulario.type !== Discord.ChannelType.GuildText) {
@@ -43,10 +43,15 @@ module.exports = {
                 interaction.reply({ embeds: [embed], ephemeral: true }).then(() => {
                     let embedFormulario = new Discord.EmbedBuilder()
                         .setColor("Random")
+                        .setTitle("📝 Formulário de Solicitação 📝")
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                         .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
-                        .setTitle(`Formulário:`)
-                        .setDescription(`Faça seu formulário clicando no botão abaixo!`)
+                        .setDescription("Clique no botão abaixo para preencher o formulário.")
+                        .addFields(
+                            { name: 'Sua resposta nos ajuda a:', value: '🔹 Melhorar sua experiência com o servidor.\n🔹 Trazer melhorias!' }
+                        )
+                        .setFooter({ text: "Sua participação é importante!", iconURL: interaction.client.user.displayAvatarURL() })
+                        .setTimestamp();
 
                     let botao = new Discord.ActionRowBuilder().addComponents(
                         new Discord.ButtonBuilder()

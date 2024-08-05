@@ -15,12 +15,12 @@ client.on("messageReactionAdd", (react, user) => {
         preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452693270495344"),
         branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452802180059309")
     }
-    if (react.message.channel.id === "1267456048642658365") {
+    if (react.message.channel.id === "1264342985256992849") {
         if (client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith('Cor')))
             client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.remove(client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith("Cor")).id)
 
         if (react.emoji.name === "🔵") {
-            react.message.reply(`Olá ${user}, você alterou a cor do seu nick para ${cores.azul}.`).then(msg => {
+            react.message.reply({ content: `Olá ${user}, você alterou a cor do seu nick para ${cores.azul}.`, ephemeral: true }).then(msg => {
                 client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.add(cores.azul)
                 setTimeout(() => {
                     msg.delete().catch(e => { })
@@ -101,7 +101,7 @@ client.on("messageReactionRemove", (react, user) => {
         preto: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452693270495344"),
         branco: client.guilds.cache.get(react.message.channel.guildId).roles.cache.get("1267452802180059309")
     }
-    if (react.message.channel.id === "1267456048642658365") {
+    if (react.message.channel.id === "1264342985256992849") {
         if (client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.cache.find(role => role.name.startsWith('Cor')))
             client.guilds.cache.get(react.message.channel.guildId).members.cache.get(user.id).roles.remove(client.guilds.cache.get(react.message.channel.guildId).roles.cache.find(role => role.name.startsWith('Cor')))
 

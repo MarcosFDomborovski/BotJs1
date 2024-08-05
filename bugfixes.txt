@@ -15,3 +15,5 @@ DiscordAPIError[10062]: Unknown interaction
 TypeError: Cannot read properties of undefined (reading '0') 
 - Ocorreu porque o valor "c.values[0]" era nulo, ou 0, logo o bot crashou. A solução foi inserir "await c.deferUpdate()" para fazer com que o coletor atualize o valor de c.value.
     at InteractionCollector.<anonymous> (F:\Codigos\BotJs1\Comandos\Util\help.js:109:37)
+
+/help apresenta problemas com interação, "Unknown interaction"

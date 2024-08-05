@@ -15,24 +15,24 @@ module.exports = {
                 .setColor("Green")
                 .setAuthor({ name: interaction.user, iconURL: interaction.user.iconURL({ dynamic: true }) })
                 .setDescription(`Olá ${interaction.user}, o sistema de antilink foi \`ativado\`.`)
-                .setFooter({text: `Data de ativação:`})
+                .setFooter({ text: `Data de ativação:` })
                 .setTimestamp(Date.now())
             let embedR = new Discord.EmbedBuilder()
                 .setColor("Red")
                 .setAuthor({ name: interaction.user, iconURL: interaction.user.iconURL({ dynamic: true }) })
                 .setDescription(`Olá ${interaction.user}, o sistema de antilink foi \`desativado\`.`)
-                .setFooter({text: `Data de desativação:`})
+                .setFooter({ text: `Data de desativação:` })
                 .setTimestamp(Date.now())
 
             let confirm = await db.get(`antilink_${interaction.guild.id}`);
 
             if (confirm === null || confirm === false) {
-                interaction.reply({ embeds: [embedG] })
+                interaction.reply({ embeds: [embedG], ephemeral: true })
                 await db.set(`antilink_${interaction.guild.id}`, true)
 
             }
             else if (confirm === true) {
-                interaction.reply({ embeds: [embedR] })
+                interaction.reply({ embeds: [embedR], ephemeral: true })
                 await db.set(`antilink_${interaction.guild.id}`, false)
             }
         }

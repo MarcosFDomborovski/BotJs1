@@ -30,7 +30,7 @@ module.exports = {
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Green")
-                .setDescription(`O usuário ${user} (\`${user.id}\`) foi desbanido com sucesso!`);
+                .setDescription(`O usuário ${user} - (\`${user.id}\`) foi desbanido com sucesso!`);
 
             let erro = new Discord.EmbedBuilder()
                 .setColor("Red")

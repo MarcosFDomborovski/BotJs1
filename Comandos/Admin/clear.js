@@ -26,7 +26,7 @@ module.exports = {
       const reply = await interaction.reply({ content: `Você precisa esperar ${remaining} segundo(s) antes de usar o comando novamente.`, ephemeral: true });
       setTimeout(async () => {
         try {
-          await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [] });
+          await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [],  ephemeral: true });
           reply.delete();
         } catch (error) {
           console.error('Erro ao editar a resposta:', error);
@@ -50,7 +50,7 @@ module.exports = {
       let embed = new Discord.EmbedBuilder()
         .setColor("Red")
         .setDescription(`\`/clear [1 - 99]\``);
-      return interaction.reply({ embeds: [embed] });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
     try {
@@ -72,7 +72,7 @@ module.exports = {
           iconURL: interaction.guild.iconURL({ dynamic: true })
         })
         .setDescription(`O canal de texto ${interaction.channel} teve \`${deletedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`);
-      const reply = await interaction.reply({ embeds: [embed] });
+      const reply = await interaction.reply({ embeds: [embed], ephemeral: true });
 
       setTimeout(async () => {
         try {

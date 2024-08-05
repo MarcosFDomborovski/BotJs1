@@ -47,9 +47,13 @@ module.exports = {
                 return interaction.reply({content:`❌ Este canal não é um canal de texto para enviar uma mensagem!`, ephemeral: true});
 
             let embed = new Discord.EmbedBuilder()
-                .setTitle(titulo)
-                .setDescription(descricao)
-                .setColor(cor)
+            .setColor(cor)
+            .setTitle(`✨ ${titulo} ✨`)
+            .setDescription(descricao)
+            .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
+            .setAuthor({ name: interaction.user, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+            .setFooter({ text: 'Mensagem criada por:', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+            .setTimestamp();
 
             canal.send({ embeds: [embed] }).then(() => {
                 interaction.reply({ content: `✅ Seu anúncio foi enviado em ${canal} com sucesso!`, ephemeral: true })

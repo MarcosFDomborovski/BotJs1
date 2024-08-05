@@ -33,7 +33,7 @@ module.exports = {
 
             let embedEphemeral = new Discord.EmbedBuilder()
             .setColor("Grey")
-            .setDescription(`Olá ${interaction.user}, o sistema foi ativado no canal ${canal} com sucesso.`)
+            .setDescription(`Olá ${interaction.user}, o sistema de verificação foi ativado no canal ${canal} com sucesso.`)
 
             let embedVerificacao = new Discord.EmbedBuilder()
             .setColor("Green")

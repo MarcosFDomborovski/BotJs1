@@ -23,17 +23,25 @@ module.exports = {
 
             let embedEphemeral = new Discord.EmbedBuilder()
                 .setColor("Green")
-                .setDescription(`Olá ${interaction.user}, o sistema foi adicionado com sucesso em ${canal} com sucesso.`)
+                .setDescription(`Olá ${interaction.user}, o sistema foi adicionado com sucesso no canal ${canal} com sucesso.`)
 
             let embedTickets = new Discord.EmbedBuilder()
-                .setColor("Random")
-                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                .setDescription(`> Clique no botão abaixo para abrir um ticket!`)
+            .setColor("Random")
+            .setTitle("📩 Suporte ao Cliente 📩")
+            .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+            .setDescription(`Clique no botão abaixo para abrir um ticket e falar diretamente com nossa equipe de suporte.`)
+            .addFields(
+                { name: 'O que você pode fazer:', value: '🔹 Reportar problemas\n🔹 Fazer perguntas\n🔹 Solicitar ajuda' }
+            )
+            .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
+            .setFooter({ text: "Estamos aqui para ajudar!", iconURL: interaction.client.user.displayAvatarURL() })
+            .setTimestamp();
 
             let botao = new Discord.ActionRowBuilder().addComponents(
                 new Discord.ButtonBuilder()
                     .setCustomId("ticketsBasico")
                     .setEmoji("🎫")
+                    .setLabel("Abrir Ticket!")
                     .setStyle(Discord.ButtonStyle.Primary)
             );
 
