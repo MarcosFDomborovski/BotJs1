@@ -144,7 +144,54 @@ module.exports = {
 
                                 } else {
                                     // MODAL
-                                    if (selectedItem.customId === 'punish_user') {
+                                    if (selectedItem.customId === 'deafen_membro') {
+                                        const modal = new Discord.ModalBuilder()
+                                            .setCustomId('modal_' + selectedItem.customId)
+                                            .setTitle('Informações Importantes');
+
+                                        const textInput = new Discord.TextInputBuilder()
+                                            .setCustomId('usuarioAlvo')
+                                            .setLabel(`${selectedItem.nome} Em quem ? (ID)`)
+                                            .setPlaceholder(`Ex: 474334792830156805`)
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                            .setRequired(true);
+
+                                        modal.addComponents(new Discord.ActionRowBuilder().addComponents(textInput));
+                                        await buttonInteraction.showModal(modal);
+                                    }
+                                    else if (['mute_membro5', 'mute_membro10'.includes(selectedItem.customId)]) {
+                                        const modal = new Discord.ModalBuilder()
+                                            .setCustomId('modal_' + selectedItem.customId)
+                                            .setTitle('Informações Importantes');
+
+                                        const textInput = new Discord.TextInputBuilder()
+                                            .setCustomId('usuarioAlvo')
+                                            .setLabel(`${selectedItem.nome} Em quem ? (ID)`)
+                                            .setPlaceholder(`Ex: 474334792830156805`)
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                            .setRequired(true);
+
+                                        modal.addComponents(new Discord.ActionRowBuilder().addComponents(textInput));
+
+                                        await buttonInteraction.showModal(modal);
+                                    }
+                                    else if (selectedItem.customId.includes('disconnect_membro')) {
+                                        const modal = new Discord.ModalBuilder()
+                                            .setCustomId('modal_' + selectedItem.customId)
+                                            .setTitle('Informações Obrigatórias para o funcionamento');
+
+                                        const textInput = new Discord.TextInputBuilder()
+                                            .setCustomId('usuarioAlvo')
+                                            .setLabel(`Digite o ID do Discord do usuário alvo.`)
+                                            .setPlaceholder('Ex: 474334792830156805 (18 chars)')
+                                            .setStyle(Discord.TextInputStyle.Short)
+                                            .setRequired(true);
+
+                                        modal.addComponents(new Discord.ActionRowBuilder().addComponents(textInput));
+
+                                        await buttonInteraction.showModal(modal);
+                                    }
+                                    else if (selectedItem.customId === 'punish_user') {
                                         const modal = new Discord.ModalBuilder()
                                             .setCustomId('modal_' + selectedItem.customId)
                                             .setTitle('Informações Obrigatórias para o funcionamento');
@@ -160,7 +207,7 @@ module.exports = {
 
                                         await buttonInteraction.showModal(modal);
 
-                                    } else if (['mute_membro5', 'mute_membro10', 'disconnect_membro', 'deafen_membro', 'troca_cargo'].includes(selectedItem.customId)) {
+                                    } else if (['deafen_membro', 'troca_cargo'].includes(selectedItem.customId)) {
                                         const modal = new Discord.ModalBuilder()
                                             .setCustomId('modal_' + selectedItem.customId)
                                             .setTitle('Informações Adicionais');
@@ -264,7 +311,225 @@ client.on('interactionCreate', async (interaction) => {
 
     // Check if the interaction is from the correct modal
     if (modalId.startsWith('modal_')) {
-        if (modalId.endsWith('punish_user')) {
+        if (modalId.endsWith('deafen_membro')) {
+            const selectedItem = selectedItems.get(interaction.user.id);
+            const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
+            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+
+            let member = await interaction.guild.members.fetch(dono);
+
+
+            if (!targetUser || targetUser === undefined || targetUser === null) {
+                console.log('ID errado')
+                return
+            }
+            else if (targetUser) {
+                const voiceChannnel = targetUser.voice.channel
+                if (targetUser.voice.setDeaf(true)) {
+                    await interaction.deferUpdate();
+                    await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`, ephemeral: true });
+                    return;
+                }
+                else if (voiceChannnel) {
+                    await targetUser.voice.setDeaf(true, `Perdeu a audição pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+                } else {
+                    await interaction.deferUpdate();
+                    await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    return;
+                }
+            }
+            let embed = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Green')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} perdeu o direito de ouvir outros membros com sucesso!`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now())
+                .addFields(
+                    {
+                        name: '> 💸 Quantia gasta',
+                        value: `**${selectedItem.preco} moedas**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 🛒 Produto Comprado',
+                        value: `**${selectedItem.nome}**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 💰 Saldo Atual',
+                        value: `**${membro.dinheiro} moedas**`,
+                        inline: false,
+                    }
+                );
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
+
+            await interaction.deferUpdate();
+            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+
+            let embedAviso = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Random')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUser}!**`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now());
+
+            member.send({ embeds: [embedAviso] });
+        }
+
+
+
+
+
+        else if (modalId.endsWith('mute_membro5') || modalId.endsWith('mute_membro10')) {
+            const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
+            const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
+            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+
+            let member = await interaction.guild.members.fetch(dono);
+            let tempo
+            if (modalId.endsWith('mute_membro5')) tempo = '5 minutos';
+            else tempo = '10 minutos';
+
+            if (!targetUser || targetUser === null || targetUser === undefined) {
+                console.log("ID inválido")
+                return
+            } else {
+                await targetUser.voice.setMute(true, `Mutado por ${tempo} pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+            }
+            try {
+
+                if (tempo === "10 minutos") {
+                    setTimeout(async () => {
+                        await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
+                    }, 5000);
+                } else if (tempo === "5 minutos") {
+                    setTimeout(async () => {
+                        await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
+                    }, 30000);
+                }
+            } catch (err) {
+                console.error(`Erro ao desmutar o usuário\n`, err);
+            }
+
+            let embed = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Green')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} foi mutado por **${tempo}**`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now())
+                .addFields(
+                    {
+                        name: '> 💸 Quantia gasta',
+                        value: `**${selectedItem.preco} moedas**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 🛒 Produto Comprado',
+                        value: `**${selectedItem.nome}**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 💰 Saldo Atual',
+                        value: `**${membro.dinheiro} moedas**`,
+                        inline: false,
+                    }
+                );
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
+
+            await interaction.deferUpdate();
+            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+
+            let embedAviso = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Random')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou **${selectedItem.nome}** para usar no usuário **${targetUser}!**\n**_Lembre-se de enviar para ele!_**`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now());
+
+            member.send({ embeds: [embedAviso] });
+
+
+
+        }
+        else if (modalId.endsWith('disconnect_membro')) {
+            const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
+            const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
+            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+
+            let member = await interaction.guild.members.fetch(dono);
+
+
+            if (!targetUser || targetUser === undefined || targetUser === null) {
+                console.log('ID errado')
+                return
+            }
+            else if (targetUser) {
+                const voiceChannnel = targetUser.voice.channel
+                if (voiceChannnel) {
+
+                    await targetUser.voice.disconnect(`Desconectado pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+                } else {
+                    await interaction.deferUpdate();
+                    await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    return;
+                }
+            }
+            let embed = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Green')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} foi desconectado com sucesso!`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now())
+                .addFields(
+                    {
+                        name: '> 💸 Quantia gasta',
+                        value: `**${selectedItem.preco} moedas**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 🛒 Produto Comprado',
+                        value: `**${selectedItem.nome}**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 💰 Saldo Atual',
+                        value: `**${membro.dinheiro} moedas**`,
+                        inline: false,
+                    }
+                );
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
+
+            await interaction.deferUpdate();
+            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+
+            let embedAviso = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Random')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUser}!**`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now());
+
+            member.send({ embeds: [embedAviso] });
+        }
+        else if (modalId.endsWith('punish_user')) {
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
             const member = interaction.guild.members.cache.find(m => m.user.id === targetUser);

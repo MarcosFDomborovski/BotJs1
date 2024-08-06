@@ -31,13 +31,12 @@ module.exports = {
         ];
 
         let randomW = Math.floor(Math.random() * dialogosWin.length);
-        let randomL = Math.floor(Math.random() * dialogoLose.length);
         let randomLoseM = Math.floor(Math.random() * dialogoLoseM.length);
 
         let didWin = Math.random() > 0.55;
 
         let amount = Number((70 * (Math.random() + 0.55)).toFixed(0));
-        let amountLoss = Number((60 * (Math.random() + 0.55)).toFixed(0));
+        let amountLoss = Number((60 * (Math.random() + 0.5)).toFixed(0));
 
         if (didWin) {
             user.dinheiro += amount;
