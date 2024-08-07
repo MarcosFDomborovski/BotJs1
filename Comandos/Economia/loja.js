@@ -317,7 +317,11 @@ client.on('interactionCreate', async (interaction) => {
             const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
 
             let member = await interaction.guild.members.fetch(dono);
-
+            if (targetUser.voice.setDeaf(true)) {
+                await interaction.deferUpdate();
+                await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`,components: [], embeds: [], ephemeral: true });
+                return;
+            }
 
             if (!targetUser || targetUser === undefined || targetUser === null) {
                 console.log('ID errado')
@@ -325,18 +329,15 @@ client.on('interactionCreate', async (interaction) => {
             }
             else if (targetUser) {
                 const voiceChannnel = targetUser.voice.channel
-                if (targetUser.voice.setDeaf(true)) {
-                    await interaction.deferUpdate();
-                    await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`, ephemeral: true });
-                    return;
-                }
-                else if (voiceChannnel) {
+
+                if (voiceChannnel) {
                     await targetUser.voice.setDeaf(true, `Perdeu a audição pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
                 } else {
                     await interaction.deferUpdate();
                     await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
                     return;
                 }
+
             }
             let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
@@ -407,7 +408,7 @@ client.on('interactionCreate', async (interaction) => {
                 if (tempo === "10 minutos") {
                     setTimeout(async () => {
                         await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
-                    }, 5000);
+                    }, 60000);
                 } else if (tempo === "5 minutos") {
                     setTimeout(async () => {
                         await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
