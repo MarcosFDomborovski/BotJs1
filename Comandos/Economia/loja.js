@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const User = require('../../models/user');
 const dono = "474334792830156805";
 const selectedItems = new Map(); // Map para armazenar itens selecionados temporariamente
+const lojaInteracoes = new Map();
+const coletoresAtivos = new Map();
 const client = require("../../index")
 
 module.exports = {
@@ -73,10 +75,23 @@ module.exports = {
             .setDescription('Escolha uma categoria abaixo para explorar os itens.')
             .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
 
-        await interaction.reply({ embeds: [initialEmbed], components: [createCategoryMenu()], ephemeral: true });
+        // PERMITE A EXECUÇÃO DE UM COMANDO /HELP
+        if (lojaInteracoes.has(interaction.user.id)) {
+            const { message, collectors } = lojaInteracoes.get(interaction.user.id);
+            collectors.forEach(collector => collector.stop());
+            try {
+                await message.delete();
+            } catch (err) {
+                console.error('Erro ao deletar a mensagem anterior da loja:', err);
+            }
+        }
+        const newMessage = await interaction.reply({ embeds: [initialEmbed], components: [createCategoryMenu()], ephemeral: true });
+
 
         const filter = i => i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter, max: 3 });
+
+        coletoresAtivos.set(interaction.user.id, collector)
 
         collector.on('collect', async i => {
             try {
@@ -151,8 +166,8 @@ module.exports = {
 
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
-                                            .setLabel(`${selectedItem.nome} Em quem ? (ID)`)
-                                            .setPlaceholder(`Ex: 474334792830156805`)
+                                            .setLabel(`${selectedItem.nome} Em quem ? (username/ID)`)
+                                            .setPlaceholder(`Ex: 474334792830156805 ou d4rknorris`)
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -166,8 +181,8 @@ module.exports = {
 
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
-                                            .setLabel(`${selectedItem.nome} Em quem ? (ID)`)
-                                            .setPlaceholder(`Ex: 474334792830156805`)
+                                            .setLabel(`${selectedItem.nome} Em quem ? (ID/username)`)
+                                            .setPlaceholder(`Ex: 474334792830156805 ou gypccom`)
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -178,12 +193,12 @@ module.exports = {
                                     else if (selectedItem.customId.includes('disconnect_membro')) {
                                         const modal = new Discord.ModalBuilder()
                                             .setCustomId('modal_' + selectedItem.customId)
-                                            .setTitle('Informações Obrigatórias para o funcionamento');
+                                            .setTitle('Informações Importantes');
 
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
-                                            .setLabel(`Digite o ID do Discord do usuário alvo.`)
-                                            .setPlaceholder('Ex: 474334792830156805 (18 chars)')
+                                            .setLabel(`Digite o username/ID do Discord do usuário alvo.`)
+                                            .setPlaceholder('Ex: 474334792830156805 ou gypcoom')
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -198,8 +213,8 @@ module.exports = {
 
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
-                                            .setLabel(`Digite o ID do Discord do usuário alvo.`)
-                                            .setPlaceholder('Ex: 474334792830156805 (18 chars)')
+                                            .setLabel(`Digite o username/ID do Discord do usuário alvo.`)
+                                            .setPlaceholder('Ex: 474334792830156805 ou d4rknorris')
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -207,7 +222,7 @@ module.exports = {
 
                                         await buttonInteraction.showModal(modal);
 
-                                    } else if (['deafen_membro', 'troca_cargo'].includes(selectedItem.customId)) {
+                                    } else if (['troca_cargo'].includes(selectedItem.customId)) {
                                         const modal = new Discord.ModalBuilder()
                                             .setCustomId('modal_' + selectedItem.customId)
                                             .setTitle('Informações Adicionais');
@@ -215,7 +230,7 @@ module.exports = {
                                         const textInput = new Discord.TextInputBuilder()
                                             .setCustomId('usuarioAlvo')
                                             .setLabel(`${selectedItem.nome} Em quem ?`)
-                                            .setPlaceholder(`Ex: quero **trocar de cargo** com o dark...`)
+                                            .setPlaceholder(`Ex: quero *trocar de cargo* com o dark...`)
                                             .setStyle(Discord.TextInputStyle.Short)
                                             .setRequired(true);
 
@@ -279,12 +294,21 @@ module.exports = {
                         } catch (error) {
                             console.error('Erro ao processar interação do botão de confirmação:', error);
                         }
+                        confirmCollector.stop();
+                        // coletoresAtivos.delete(interaction.user.id);
+                        // lojaInteracoes.delete(interaction.user.id)
                     });
 
-                    confirmCollector.on('end', collected => {
+                    confirmCollector.on('end', async collected => {
                         if (collected.size === 0) {
                             console.log("deu boa")
                         }
+                        try {
+                            await newMessage.delete();
+                        } catch (err) {
+                            console.error("deu ruim")
+                        }
+                        lojaInteracoes.delete(interaction.user.id)
                     });
                 }
             } catch (error) {
@@ -294,6 +318,7 @@ module.exports = {
 
         collector.on('end', collected => {
             console.log(`Foi coletado ${collected.size} interações.`);
+            coletoresAtivos.delete(interaction.user.id);
         });
     }
 };
@@ -302,55 +327,68 @@ module.exports = {
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isModalSubmit()) return;
 
+
+
+
+
+
+
+
     const modalId = interaction.customId;
 
     let membro = await User.findOne({ discordId: interaction.user.id });
     if (!membro) membro = new User({ discordId: interaction.user.id, username: interaction.user.username });
 
-
-
     // Check if the interaction is from the correct modal
     if (modalId.startsWith('modal_')) {
         if (modalId.endsWith('deafen_membro')) {
+            let memberDono = await interaction.guild.members.fetch(dono);
+
             const selectedItem = selectedItems.get(interaction.user.id);
             const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-            const targetUser = await interaction.guild.members.fetch(targetId);
-            let deafSelf = targetUser.voice.deaf || targetUser.voice.selfDeaf;
 
-            let member = await interaction.guild.members.fetch(dono);
+            let targetUsername = interaction.guild.members.cache.find(m => m.user.username === targetId) || await interaction.guild.members.fetch(targetId);
+            targetUsername = await interaction.guild.members.fetch(targetUsername.id);
+
+            let deafSelf = targetUsername.voice.deaf || targetUsername.voice.selfDeaf;
+
             if (deafSelf) {
                 await interaction.deferUpdate();
                 await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`, components: [], embeds: [], ephemeral: true });
                 return;
             }
 
-            if (!targetUser || targetUser === undefined || targetUser === null) {
-                console.log('ID errado')
+            if (!targetUsername || targetUsername === undefined || targetUsername === null) {
+                console.log('username/ID errado')
                 return
             }
-            else if (targetUser) {
-                const voiceChannnel = targetUser.voice.channel
+            else if (targetUsername) {
+                const voiceChannnel = targetUsername.voice.channel
 
                 if (voiceChannnel) {
-                    await targetUser.voice.setDeaf(true, `Perdeu a audição pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+                    await targetUsername.voice.setDeaf(true, `Perdeu a audição pelo usuário ${interaction.user}\n**Motivo: Item comprado na loja!**`);
+                    await targetUsername.send(`Perdeu a audição pelo usuário ${interaction.user}\n**Motivo:** Item comprado na loja!`);
                 } else {
                     await interaction.deferUpdate();
-                    await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    await interaction.editReply({ content: `**O usuário ${targetUsername.user} não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
                     return;
                 }
 
             }
             setTimeout(async () => {
-                await targetUser.voice.setDeaf(false, `Voltou a ouvir!\nMotivo: **Já se passaram 5 minutos!**`)
-                await targetUser.send(`Voltou a ouvir!\nMotivo: **Já se passaram 5 minutos!**`)
-            }, 30000);
+                await targetUsername.voice.setDeaf(false, `Sua audição voltou!\n**Motivo**: Já se passaram **5 minutos!**`)
+                await targetUsername.send(`Olá ${targetUsername.user}, Sua audição voltou!\n**Motivo**: Já se passaram **5 minutos!**`)
+            }, 300000);
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
 
             let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Green')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} perdeu o direito de ouvir outros membros com sucesso!`)
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário **${targetUsername.user}** perdeu o direito de ouvir outros membros com sucesso!`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now())
                 .addFields(
@@ -371,74 +409,70 @@ client.on('interactionCreate', async (interaction) => {
                     }
                 );
 
-            membro.dinheiro -= selectedItem.preco
-            await membro.save();
-
             await interaction.deferUpdate();
-            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true });
 
             let embedAviso = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Random')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUser}!**`)
+                .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário ${targetUsername.user.username}**!`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now());
 
-            member.send({ embeds: [embedAviso] });
+            memberDono.send({ embeds: [embedAviso] });
         }
-
-
-
-
-
         else if (modalId.endsWith('mute_membro5') || modalId.endsWith('mute_membro10')) {
+            let memberDono = await interaction.guild.members.fetch(dono);
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-            // const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
-            const targetUser = await interaction.guild.members.fetch(targetId);
-            let muteSelf = targetUser.voice.mute;
-            // let guild = await client.guilds.cache.get(interaction.guildId);
 
-            let member = await interaction.guild.members.fetch(dono);
+            let targetUsername = interaction.guild.members.cache.find(m => m.user.username === targetId) || await interaction.guild.members.fetch(targetId);
+            targetUsername = await interaction.guild.members.fetch(targetUsername.id);
+            let muteSelf = targetUsername.voice.mute;
+
             let tempo
             if (modalId.endsWith('mute_membro5')) tempo = '5 minutos';
             else tempo = '10 minutos';
 
-            if (!targetUser || targetUser === null || targetUser === undefined) {
-                console.log("ID inválido")
+            if (!targetUsername || targetUsername === null || targetUsername === undefined) {
+                console.log("usuario/ID inválido")
                 return;
             } else if (muteSelf) {
                 await interaction.deferUpdate();
-                await interaction.editReply({ content: `**O usuário ${targetUser.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true });
+                await interaction.editReply({ content: `**O usuário ${targetUsername.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true });
                 return;
             } else {
-                await targetUser.voice.setMute(true, `Mutado por ${tempo} pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+                await targetUsername.voice.setMute(true, `Mutado por ${tempo} pelo usuário ${interaction.user}\n**Motivo**: Item comprado na loja!`);
+                await targetUsername.send(`Mutado por ${tempo} pelo usuário ${interaction.user}\n**Motivo**: Item comprado na loja!`);
             }
             try {
 
                 if (tempo === "10 minutos") {
                     setTimeout(async () => {
-                        await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
-                        await targetUser.send({ content: `**Olá ${targetUser.user}, Você já pode falar novamente!\nMotivo: Já se passaram **${tempo}**` })
-                    }, 60000);
+                        await targetUsername.voice.setMute(false, `**Desmutado!**\n**Motivo**: Já se passaram **${tempo}**`)
+                        await targetUsername.send({ content: `Olá ${targetUsername.user}, Você já pode falar novamente!\n**Motivo**: Já se passaram **${tempo}**` })
+                    }, 600000);
                 } else if (tempo === "5 minutos") {
                     setTimeout(async () => {
-                        await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
-                        await targetUser.send({ content: `**Olá ${targetUser.user}, Você já pode falar novamente!\nMotivo: Já se passaram **${tempo}**` })
-                    }, 30000);
+                        await targetUsername.voice.setMute(false, `**Desmutado!**\n**Motivo**: Já se passaram **${tempo}**`)
+                        await targetUsername.send({ content: `Olá ${targetUsername.user}, Você já pode falar novamente!\n**Motivo**: Já se passaram **${tempo}**` })
+                    }, 300000);
                 }
             } catch (err) {
                 console.error(`Erro ao desmutar o usuário\n`, err);
             }
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
 
             let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Green')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} foi mutado por **${tempo}**`)
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUsername.user} foi mutado por **${tempo}**`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now())
                 .addFields(
@@ -459,9 +493,6 @@ client.on('interactionCreate', async (interaction) => {
                     }
                 );
 
-            membro.dinheiro -= selectedItem.preco
-            await membro.save();
-
             await interaction.deferUpdate();
             await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
 
@@ -470,44 +501,47 @@ client.on('interactionCreate', async (interaction) => {
                 .setColor('Random')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou **${selectedItem.nome}** para usar no usuário **${targetUser}!**\n**_Lembre-se de enviar para ele!_**`)
+                .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou **${selectedItem.nome}** para usar no usuário **${targetUsername.user}!**`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now());
 
-            member.send({ embeds: [embedAviso] });
-
-
-
+            memberDono.send({ embeds: [embedAviso] });
         }
         else if (modalId.endsWith('disconnect_membro')) {
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
 
-            let member = await interaction.guild.members.fetch(dono);
+            let targetUsername = interaction.guild.members.cache.find(m => m.user.username === targetId) || await interaction.guild.members.fetch(targetId);
+            targetUsername = await interaction.guild.members.fetch(targetUsername.id);
+
+            let memberDono = await interaction.guild.members.fetch(dono);
 
 
-            if (!targetUser || targetUser === undefined || targetUser === null) {
-                console.log('ID errado')
+            if (!targetUsername || targetUsername === undefined || targetUsername === null) {
+                console.log('username/ID errado')
                 return
             }
-            else if (targetUser) {
-                const voiceChannnel = targetUser.voice.channel
+            else if (targetUsername) {
+                const voiceChannnel = targetUsername.voice.channel
                 if (voiceChannnel) {
-
-                    await targetUser.voice.disconnect(`Desconectado pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
+                    await targetUsername.voice.disconnect(`Desconectado pelo usuário ${interaction.user}\n**Motivo:** Item comprado na loja!`);
+                    await targetUsername.send(`Desconectado pelo usuário ${interaction.user}\n**Motivo:** Item comprado na loja!`);
                 } else {
                     await interaction.deferUpdate();
                     await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
                     return;
                 }
             }
+
+            membro.dinheiro -= selectedItem.preco
+            await membro.save();
+
             let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Green')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUser.user.username} foi desconectado com sucesso!`)
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nO usuário ${targetUsername.user} foi desconectado com sucesso!`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now())
                 .addFields(
@@ -528,44 +562,47 @@ client.on('interactionCreate', async (interaction) => {
                     }
                 );
 
-            membro.dinheiro -= selectedItem.preco
-            await membro.save();
+
 
             await interaction.deferUpdate();
-            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ content: ``, embeds: [embed], components: [], ephemeral: true });
 
             let embedAviso = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Random')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUser}!**`)
+                .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUsername.user}!**`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now());
 
-            member.send({ embeds: [embedAviso] });
+            memberDono.send({ embeds: [embedAviso] });
         }
         else if (modalId.endsWith('punish_user')) {
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
-            const member = interaction.guild.members.cache.find(m => m.user.id === targetUser);
-            if (member) {
-                console.log(13123321)
-                const cargoCastigo = interaction.guild.roles.cache.get('1269001666632487044').id
-                member.roles.add(cargoCastigo)
 
-                console.log('entrou no castigo')
+            let targetUsername = interaction.guild.members.cache.find(m => m.user.username === targetUser) || await interaction.guild.members.fetch(targetUser);
+            targetUsername = await interaction.guild.members.fetch(targetUsername.id);
+
+            let memberDono = await interaction.guild.members.fetch(dono);
+
+            if (targetUsername) {
+                const cargoCastigo = interaction.guild.roles.cache.get('1269001666632487044').id
+                targetUsername.roles.add(cargoCastigo)
+                targetUsername.send(`Olá ${targetUsername.user}\nVocê foi colocado de castigo pelo usuário **${interaction.user}**`)
+                console.log('usuário entrou no castigo')
                 setTimeout(() => {
-                    member.roles.remove(cargoCastigo);
-                    console.log("saiu do castigo")
+                    targetUsername.roles.remove(cargoCastigo);
+                    targetUsername.send(`Olá ${targetUsername.user}\nVocê saiu do castigo!\**nMotivo:** Já se passou 1 dia.`)
+                    console.log("usuário saiu do castigo")
                 }, 86400000);
-            } else if (!member || member === undefined || member === null) {
-                console.log('ID errado')
+            } else if (!targetUsername || targetUsername === undefined || targetUsername === null) {
+                console.log('username/ID errado')
                 return
             };
 
             membro.dinheiro -= selectedItem.preco
-            console.log('descontou')
             await membro.save();
 
             let embed = new Discord.EmbedBuilder()
@@ -573,7 +610,7 @@ client.on('interactionCreate', async (interaction) => {
                 .setColor('Green')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nNo momento, os itens são enviados manualmente por um ADM, peço que aguarde pacientemente!\nOu fale com o meu dono <@${dono}>!`)
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}** para usar no usuário **${targetUsername.user}**\n`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now())
                 .addFields(
@@ -594,68 +631,67 @@ client.on('interactionCreate', async (interaction) => {
                     }
                 );
             await interaction.deferUpdate();
-            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ content: ``, embeds: [embed], components: [], ephemeral: true });
 
             let embedAviso = new Discord.EmbedBuilder()
-                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                .setColor('Random')
-                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-                .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - [id - ${interaction.user.id}] comprou **${selectedItem.nome}** para usar no usuário **<@${targetUser}>!**`)
-                .setFooter({ text: 'Data da compra:' })
-                .setTimestamp(Date.now());
-
-            member.send({ embeds: [embedAviso] });
-
-
-        } else {
-            const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
-            const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
-            let member = await interaction.guild.members.fetch(dono);
-
-
-            let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Green')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nNo momento, os itens são enviados manualmente por um ADM, peço que aguarde pacientemente!\nOu fale com o meu dono <@${dono}>!`)
+                .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - [id - ${interaction.user.id}] comprou **${selectedItem.nome}** para usar no usuário **${targetUsername.user}!**`)
                 .setFooter({ text: 'Data da compra:' })
-                .setTimestamp(Date.now())
-                .addFields(
-                    {
-                        name: '> 💸 Quantia gasta',
-                        value: `**${selectedItem.preco} moedas**`,
-                        inline: false,
-                    },
-                    {
-                        name: '> 🛒 Produto Comprado',
-                        value: `**${selectedItem.nome}**`,
-                        inline: false,
-                    },
-                    {
-                        name: '> 💰 Saldo Atual',
-                        value: `**${membro.dinheiro} moedas**`,
-                        inline: false,
-                    }
-                );
+                .setTimestamp(Date.now());
+
+            memberDono.send({ embeds: [embedAviso] });
+        } else {
+            const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
+            const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
+
+            let memberDono = await interaction.guild.members.fetch(dono);
 
             membro.dinheiro -= selectedItem.preco
             await membro.save();
 
+            let embed = new Discord.EmbedBuilder()
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Green')
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTitle('✅ Compra Efetuada! ✅')
+                .setDescription(`Olá ${interaction.user}, você comprou **${selectedItem.nome}**\nNo momento, os itens são enviados manualmente por um ADM, peço que aguarde pacientemente!\nOu fale com o meu dono <@${dono}>!`)
+                .setFooter({ text: 'Data da compra:' })
+                .setTimestamp(Date.now())
+                .addFields(
+                    {
+                        name: '> 💸 Quantia gasta',
+                        value: `**${selectedItem.preco} moedas**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 🛒 Produto Comprado',
+                        value: `**${selectedItem.nome}**`,
+                        inline: false,
+                    },
+                    {
+                        name: '> 💰 Saldo Atual',
+                        value: `**${membro.dinheiro} moedas**`,
+                        inline: false,
+                    }
+                );
+
             await interaction.deferUpdate();
-            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ content: ``, embeds: [embed], components: [], ephemeral: true });
 
             let embedAviso = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Random')
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTitle('✅ Compra Efetuada! ✅')
-                .setDescription(`Olá ${member}, o usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou **${selectedItem.nome}** para usar no usuário **${targetUser}!**\n**_Lembre-se de enviar para ele!_**`)
+                .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou **${selectedItem.nome}**\n\n**${targetUser}!**\n**_Lembre-se de enviar para ele!_**`)
                 .setFooter({ text: 'Data da compra:' })
                 .setTimestamp(Date.now());
 
-            member.send({ embeds: [embedAviso] });
+            memberDono.send({ embeds: [embedAviso] });
         }
     }
+    userMessages.delete(membro.id);
 });

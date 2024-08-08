@@ -17,3 +17,5 @@ TypeError: Cannot read properties of undefined (reading '0')
     at InteractionCollector.<anonymous> (F:\Codigos\BotJs1\Comandos\Util\help.js:109:37)
 
 /help apresenta problemas com interação, "Unknown interaction"
+
+/loja, caso o usuario ignore a mensagem e executa o comando novamente, o bot quebra, "Interaction has already been acknowledged"

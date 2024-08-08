@@ -34,3 +34,7 @@ let embed = new Discord.EmbedBuilder()
           iconURL: 'https://example.com/path_to_luck_icon.png' // Adicione um ícone relevante
       })
       .setTimestamp(Date.now() + duracao)
+
+    // const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+    // let guild = await client.guilds.cache.get(interaction.guildId);
+    // const targetUser = await interaction.guild.members.fetch(targetId);
