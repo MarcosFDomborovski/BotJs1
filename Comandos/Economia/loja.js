@@ -314,12 +314,13 @@ client.on('interactionCreate', async (interaction) => {
         if (modalId.endsWith('deafen_membro')) {
             const selectedItem = selectedItems.get(interaction.user.id);
             const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+            const targetUser = await interaction.guild.members.fetch(targetId);
+            let deafSelf = targetUser.voice.deaf || targetUser.voice.selfDeaf;
 
             let member = await interaction.guild.members.fetch(dono);
-            if (targetUser.voice.setDeaf(true)) {
+            if (deafSelf) {
                 await interaction.deferUpdate();
-                await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`,components: [], embeds: [], ephemeral: true });
+                await interaction.editReply({ content: `**O usuário alvo já perdeu a audição!\nTente com outro usuário.**`, components: [], embeds: [], ephemeral: true });
                 return;
             }
 
@@ -339,6 +340,11 @@ client.on('interactionCreate', async (interaction) => {
                 }
 
             }
+            setTimeout(async () => {
+                await targetUser.voice.setDeaf(false, `Voltou a ouvir!\nMotivo: **Já se passaram 5 minutos!**`)
+                await targetUser.send(`Voltou a ouvir!\nMotivo: **Já se passaram 5 minutos!**`)
+            }, 30000);
+
             let embed = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Green')
@@ -390,7 +396,10 @@ client.on('interactionCreate', async (interaction) => {
         else if (modalId.endsWith('mute_membro5') || modalId.endsWith('mute_membro10')) {
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-            const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+            // const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+            const targetUser = await interaction.guild.members.fetch(targetId);
+            let muteSelf = targetUser.voice.mute;
+            // let guild = await client.guilds.cache.get(interaction.guildId);
 
             let member = await interaction.guild.members.fetch(dono);
             let tempo
@@ -399,7 +408,11 @@ client.on('interactionCreate', async (interaction) => {
 
             if (!targetUser || targetUser === null || targetUser === undefined) {
                 console.log("ID inválido")
-                return
+                return;
+            } else if (muteSelf) {
+                await interaction.deferUpdate();
+                await interaction.editReply({ content: `**O usuário ${targetUser.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true });
+                return;
             } else {
                 await targetUser.voice.setMute(true, `Mutado por ${tempo} pelo usuário ${interaction.user}\nMotivo: Item comprado na loja!`);
             }
@@ -408,10 +421,12 @@ client.on('interactionCreate', async (interaction) => {
                 if (tempo === "10 minutos") {
                     setTimeout(async () => {
                         await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
+                        await targetUser.send({ content: `**Olá ${targetUser.user}, Você já pode falar novamente!\nMotivo: Já se passaram **${tempo}**` })
                     }, 60000);
                 } else if (tempo === "5 minutos") {
                     setTimeout(async () => {
                         await targetUser.voice.setMute(false, `**Desmutado!**\nMotivo: Já se passaram **${tempo}**`)
+                        await targetUser.send({ content: `**Olá ${targetUser.user}, Você já pode falar novamente!\nMotivo: Já se passaram **${tempo}**` })
                     }, 30000);
                 }
             } catch (err) {
