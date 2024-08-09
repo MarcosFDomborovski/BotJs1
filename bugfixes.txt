@@ -4,14 +4,18 @@
 /dm Caso o usuario interaja com o bot no DM, o bot quebra
  - Consertado, causado quando certa propriedade que envolva mensagens, seja nulo ou undefined. Solução, fazer o bot retornar caso essa propriedade seja nula.
 
-DiscordAPIError[10062]: Unknown interaction 
- - Causado por demorar demais. Possível correção é utilizar "await defer.Reply" ou "await defer.editReply".
-
 DiscordAPIError[40060]: Interaction has already been acknowledged.  
 - Ocorre quando você tenta responder a uma interação do Discord mais de uma vez.
+
+DiscordAPIError[10062]: Unknown interaction 
+ - Causado por demorar demais. Possível correção é utilizar "await defer.Reply" ou "await defer.editReply", ou:
+ await deferUpdate();
+ await editReply(conteúdo);
 
 TypeError: Cannot read properties of undefined (reading '0') 
 - Ocorreu porque o valor "c.values[0]" era nulo, ou 0, logo o bot crashou. A solução foi inserir "await c.deferUpdate()" para fazer com que o coletor atualize o valor de c.value.
     at InteractionCollector.<anonymous> (F:\Codigos\BotJs1\Comandos\Util\help.js:109:37)
 
-    
+/help apresenta problemas com interação, "Unknown interaction"
+
+/loja, caso o usuario ignore a mensagem e executa o comando novamente, o bot quebra, "Interaction has already been acknowledged"

@@ -10,15 +10,15 @@ module.exports = {
             interaction.reply({ content: `Você não possui permissão para utilizar este comando.`, ephemeral: true });
         } else {
             const cores = {
-                azul: interaction.guild.roles.cache.get("1261369186307936266"),
-                verde: interaction.guild.roles.cache.get("1261369253471191070"),
-                amarelo: interaction.guild.roles.cache.get("1261369293267009626"),
-                laranja: interaction.guild.roles.cache.get("1261369500729610332"),
-                vermelho: interaction.guild.roles.cache.get("1261369406072688721"),
-                rosa: interaction.guild.roles.cache.get("1261369743542321214"),
-                roxo: interaction.guild.roles.cache.get("1261369680199942186"),
-                preto: interaction.guild.roles.cache.get("1261369866724573315"),
-                branco: interaction.guild.roles.cache.get("1261369946051706982")
+                azul: interaction.guild.roles.cache.get("1194294023968522351"),
+                verde: interaction.guild.roles.cache.get("1267451959825403995"),
+                amarelo: interaction.guild.roles.cache.get("1267452119003435121"),
+                laranja: interaction.guild.roles.cache.get("1267452176477851729"),
+                vermelho: interaction.guild.roles.cache.get("1267452333424382013"),
+                rosa: interaction.guild.roles.cache.get("1267452514358399077"),
+                roxo: interaction.guild.roles.cache.get("1267452549967904799"),
+                preto: interaction.guild.roles.cache.get("1267452693270495344"),
+                branco: interaction.guild.roles.cache.get("1267452802180059309")
             }
 
             const embed = new Discord.EmbedBuilder()

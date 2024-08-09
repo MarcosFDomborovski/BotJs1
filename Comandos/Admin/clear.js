@@ -14,26 +14,24 @@ module.exports = {
       required: true,
     },
   ],
-  cooldown: 4000,
+  cooldown: 5000,
 
   run: async (client, interaction) => {
-    const userId = interaction.user.id
-    const now = Date.now()
-    const cooldown = client.cooldowns.get(userId) || 0
+    const userId = interaction.user.id;
+    const now = Date.now();
+    const cooldown = client.cooldowns.get(userId) || 0;
 
     if (now - cooldown < module.exports.cooldown) {
       const remaining = Math.ceil((module.exports.cooldown - (now - cooldown)) / 1000);
       const reply = await interaction.reply({ content: `Você precisa esperar ${remaining} segundo(s) antes de usar o comando novamente.`, ephemeral: true });
-      
-
       setTimeout(async () => {
         try {
-          await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [] });
+          await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [],  ephemeral: true });
           reply.delete();
         } catch (error) {
           console.error('Erro ao editar a resposta:', error);
         }
-      }, 4000); 
+      }, remaining * 1000); 
       return;
     }
 
@@ -52,7 +50,7 @@ module.exports = {
       let embed = new Discord.EmbedBuilder()
         .setColor("Red")
         .setDescription(`\`/clear [1 - 99]\``);
-      return interaction.reply({ embeds: [embed] });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
     try {
@@ -65,7 +63,7 @@ module.exports = {
         return interaction.reply({ embeds: [embed], ephemeral: true });
       }
 
-      await interaction.channel.bulkDelete(fetchedMessages, true);
+      const deletedMessages = await interaction.channel.bulkDelete(fetchedMessages, true);
 
       let embed = new Discord.EmbedBuilder()
         .setColor("Green")
@@ -73,8 +71,8 @@ module.exports = {
           name: interaction.guild.name,
           iconURL: interaction.guild.iconURL({ dynamic: true })
         })
-        .setDescription(`O canal de texto ${interaction.channel} teve \`${fetchedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`);
-      const reply = await interaction.reply({ embeds: [embed] });
+        .setDescription(`O canal de texto ${interaction.channel} teve \`${deletedMessages.size}\` mensagens deletadas por \`${interaction.user.username}\`.`);
+      const reply = await interaction.reply({ embeds: [embed], ephemeral: true });
 
       setTimeout(async () => {
         try {

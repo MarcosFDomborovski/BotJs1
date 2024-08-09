@@ -68,7 +68,7 @@ module.exports = {
                     name: interaction.guild.name,
                     iconURL: interaction.guild.iconURL({ dynamic: true })
                 })
-                .setThumbnail('https://example.com/path_to_sponsor_image.png') 
+                .setThumbnail('https://example.com/path_to_sponsor_image.png')
                 .setDescription(`
                 🎁 **Prêmio:** ${premio}
                 📜 **Descrição:** ${descricao}
@@ -84,7 +84,7 @@ module.exports = {
                 .setImage('https://example.com/path_to_giveaway_banner_image.png')
                 .setFooter({
                     text: "Data de Finalização:",
-                    iconURL: 'https://example.com/path_to_luck_icon.png' 
+                    iconURL: 'https://example.com/path_to_luck_icon.png'
                 })
                 .setTimestamp(Date.now() + duracao);
 
@@ -152,19 +152,18 @@ module.exports = {
                                 name: interaction.guild.name,
                                 iconURL: interaction.guild.iconURL({ dynamic: true })
                             })
-                            .setThumbnail('https://example.com/path_to_winner_trophy_image.png') 
+                            .setThumbnail('https://example.com/path_to_winner_trophy_image.png')
                             .setDescription(`✨ **Parabéns <@${ganhador}>!** ✨\n\n🎁 Você foi sorteado(a) e ganhou:\n **${premio}**\n\n📜 **Descrição do Prêmio:**\n${descricao}`)
                             .addFields(
                                 { name: '👥 Número de Participantes:', value: `${click.length}`, inline: true },
                                 { name: '⏰ Duração do Sorteio:', value: `${tempo}`, inline: true },
-                                { name: '🎲 Sorteio Concluído em:', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true } 
+                                { name: '🎲 Sorteio Concluído em:', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                             )
-                            .setImage('https://example.com/path_to_congratulatory_banner_image.png') 
+                            .setImage('https://example.com/path_to_congratulatory_banner_image.png')
                             .setFooter({
-                                text: "Obrigado a todos que participaram!",
-                                iconURL: 'https://example.com/path_to_participation_image.png' 
+                                text: "Data:",
                             })
-                            .setTimestamp()
+                            .setTimestamp(Date.now())
                     ]
                 });
             });

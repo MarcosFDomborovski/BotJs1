@@ -36,7 +36,7 @@ client.on("interactionCreate", async (interaction) => {
                     ]
                 }).then((chat) => {
 
-                    interaction.reply({ content: `🎫 Olá **${interaction.user.username}**, seu ticket foi aberto em **${chat}**`, ephemeral: true })
+                    interaction.reply({ content: `Olá **${interaction.user.username}**, seu ticket foi aberto em **${chat}**`, ephemeral: true })
                     let embed = new Discord.EmbedBuilder()
                         .setColor("Random")
                         .setDescription(`Olá ${interaction.user}, você abriu o seu ticket.\nAguarde um momento para ser atendido!`);

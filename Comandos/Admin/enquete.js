@@ -80,7 +80,7 @@ module.exports = {
                         if (!emojiOpc2) emojiOpc2 = 0
                         
                         if (emojiOpc1 > emojiOpc2) win = `**${op1}**` + `\n*(Total de reações:* \`${emojiOpc1}\`)`
-                        if (emojiOpc2 > emojiOpc1) win = `**${op2}**` + `\n*(Total de reações:* \`${emojiOpc2}\`)`             
+                        if (emojiOpc2 > emojiOpc1) win = `**${op2}**` + `\n*(Total de reações:* \`${emojiOpc2}\`)`
                       
                         if (emojiOpc1 === emojiOpc2) win = `Houve um empate! (Total de reações: \`${emojiOpc1}\`)`
                         

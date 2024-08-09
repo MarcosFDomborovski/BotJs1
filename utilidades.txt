@@ -1,7 +1,6 @@
 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
 .setColor("Green")
 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }), })
-.setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
 .setTitle(`🤑 Moedas Resgatadas! 🤑`)
 .setDescription(`Parabéns ${userDatabase.username}! Você resgatou com sucesso ${amount} moedas!`)
 .setTimestamp(Date.now())
@@ -17,7 +16,7 @@ let embed = new Discord.EmbedBuilder()
           name: interaction.guild.name,
           iconURL: interaction.guild.iconURL({ dynamic: true })
       })
-      .setThumbnail('https://example.com/path_to_sponsor_image.png') // Adicione uma imagem representando o patrocinador
+      .setThumbnail('https://example.com/path_to_sponsor_image.png') 
       .setDescription(`
       🎁 **Prêmio:** ${premio}
       📜 **Descrição:** ${descricao}
@@ -35,3 +34,7 @@ let embed = new Discord.EmbedBuilder()
           iconURL: 'https://example.com/path_to_luck_icon.png' // Adicione um ícone relevante
       })
       .setTimestamp(Date.now() + duracao)
+
+    // const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
+    // let guild = await client.guilds.cache.get(interaction.guildId);
+    // const targetUser = await interaction.guild.members.fetch(targetId);

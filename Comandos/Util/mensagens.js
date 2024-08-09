@@ -22,8 +22,8 @@ module.exports = {
             const embed = new Discord.EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`O usuário ${user.username} não está no servidor!`);
-                
             await interaction.reply({ embeds: [embed] });
+
         } else {
             let messageCountDoc = await client.userDB.findOne({ discordId: member.user.id});
             if (!messageCountDoc) {
@@ -34,7 +34,7 @@ module.exports = {
             const embed = new Discord.EmbedBuilder()
                 .setColor("Green")
                 .setAuthor({ name: member.user.username, iconURL: member.user.displayAvatarURL({ dynamic: true }) })
-                .setDescription(`O usuário <@${messageCountDoc.discordId}> possui \`${messageCountDoc.mensagens}\` mensagens neste servidor.`);
+                .setDescription(`O usuário **<@${messageCountDoc.discordId}>** possui \`${messageCountDoc.mensagens}\` mensagens neste servidor.`);
 
             await interaction.reply({ embeds: [embed] });
         }

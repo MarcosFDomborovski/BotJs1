@@ -24,7 +24,7 @@ module.exports = {
                 if (canal.id !== interaction.channel.id) return interaction.reply({ content: `🔓 O canal de texto ${canal} foi desbloqueado! 🔓` })
                 canal.send({ content: `🔓 Este canal foi desbloqueado! 🔓` })
             }).catch(e => {
-                interaction.reply({ content: `❌ Ops, algo deu errado.` })
+                interaction.reply({ content: `❌ Ops, algo deu errado.`, ephemeral: true })
             })
         }
     }

@@ -26,17 +26,17 @@ module.exports = {
         } else {
             let user = interaction.options.getUser("user");
             let reason = interaction.options.getString("motivo");
-            if (!motivo) motivo = "Não definido.";
+            if (!reason) reason = "Não definido.";
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Green")
-                .setDescription(`O usuário ${user} (\`${user.id}\`) foi desbanido com sucesso!`);
+                .setDescription(`O usuário ${user} - (\`${user.id}\`) foi desbanido com sucesso!`);
 
             let erro = new Discord.EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`Ocorreu um erro ao desbanir o usuário ${user} (\`${user.id}\`) do servidor!`);
 
-            interaction.guild.members.unban(user.id, motivo).then(() => {
+            interaction.guild.members.unban(user.id, reason).then(() => {
                 interaction.reply({ embeds: [embed] });
             }).catch(e => {
                 interaction.reply({ embeds: [erro] });

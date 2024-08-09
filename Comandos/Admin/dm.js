@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 
 module.exports = {
-    name: "dm",
+    name: "dm-embed",
     description: "Envie uma mensagem no privado de um usuário",
     type: Discord.ApplicationCommandType.ChatInput,
     options: [
@@ -15,13 +15,7 @@ module.exports = {
             name: "embed",
             description: "Envie a mensagem em embed",
             type: Discord.ApplicationCommandOptionType.String,
-            required: false,
-        },
-        {
-            name: "normal",
-            description: "Envie a mensagem sem embed",
-            type: Discord.ApplicationCommandOptionType.String,
-            required: false,
+            required: true,
         }
     ],
 
@@ -32,62 +26,38 @@ module.exports = {
         } else {
             let user = interaction.options.getUser("usuário");
             let msgEmbed = interaction.options.getString("embed");
-            let msgNormal = interaction.options.getString("normal");
 
             let embed = new Discord.EmbedBuilder()
                 .setColor("Random")
                 .setTitle(`📬 Mensagem Recebida! 📬`)
-                .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-                .setDescription(`${msgEmbed}`);
+                .setDescription(`**${msgEmbed}**`)
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .addFields(
+                    { name: 'De:', value: `${interaction.user}`, inline: true },
+                    { name: 'Para:', value: `${user}`, inline: true }
+                )
+                .setFooter({ text: 'Mensagem enviada via Discord Bot', iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                .setTimestamp();
 
-            if (!msgEmbed) msgEmbed = "⠀";
-            if (!msgNormal) msgNormal = "⠀";
+            try {
+                user.send({ embeds: [embed] })
+                let emb = new Discord.EmbedBuilder()
+                    .setColor("Green")
+                    .setTitle(`📨 Mensagem Enviada! 📨`)
+                    .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                    .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
 
-            if (!msgNormal && !msgEmbed) {
-                interaction.reply({ content: `Olá ${interaction.user}, você deve fornecer ao menos uma mensagem!`, ephemeral: true })
-            }
+                await interaction.reply({ embeds: [emb], ephemeral: true })
 
-            if (msgEmbed === "⠀") {
-                try {
-                    user.send(msgNormal);
-                    let emb = new Discord.EmbedBuilder()
-                        .setColor("Green")
-                        .setTitle(`📨 Mensagem Enviada! 📨`)
-                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                        .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
+            } catch (e) {
+                let emb = new Discord.EmbedBuilder()
+                    .setColor("Red")
+                    .setTitle(`❌ Algo deu errado! ❌`)
+                    .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                    .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
 
-                    interaction.reply({ embeds: [emb], ephemeral: true })
 
-                } catch (e) {
-                    let emb = new Discord.EmbedBuilder()
-                        .setColor("Red")
-                        .setTitle(`❌ Algo deu errado! ❌`)
-                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                        .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
-
-                    interaction.reply({ embeds: [emb], ephemeral: true })
-                }
-
-            } else if (msgNormal === "⠀") {
-                try {
-                    user.send({ embeds: [embed] })
-                    let emb = new Discord.EmbedBuilder()
-                        .setColor("Green")
-                        .setTitle(`📨 Mensagem Enviada! 📨`)
-                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                        .setDescription(`Olá ${interaction.user}, a mensagem foi enviada para ${user} com sucesso!`);
-
-                    interaction.reply({ embeds: [emb], ephemeral: true })
-
-                } catch (e) {
-                    let emb = new Discord.EmbedBuilder()
-                        .setColor("Red")
-                        .setTitle(`❌ Algo deu errado! ❌`)
-                        .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
-                        .setDescription(`Olá ${interaction.user}, a mensagem não foi enviada para ${user}, pois o usuário está com a DM fechada!`);
-
-                    interaction.reply({ embeds: [emb], ephemeral: true })
-                }
+                await interaction.reply({ embeds: [emb], ephemeral: true })
             }
         }
     }

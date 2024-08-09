@@ -14,7 +14,7 @@ module.exports = {
         {
             name: "linkthumb",
             type: Discord.ApplicationCommandOptionType.String,
-            description: "Coloque o link da thumbnail.",
+            description: "Coloque o link da thumbnail. (Copie o link da imagem)",
             required: true,
         }
     ],

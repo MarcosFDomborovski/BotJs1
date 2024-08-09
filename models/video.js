@@ -4,7 +4,7 @@ const VideoSchema = new mongoose.Schema({
     thumbnail: String,
     createdAt: {
         type: Date,
-        default: () => Date.now(),
+        default: () => Date.now() * (60 * 60 * 3) * (-1),
     }
 })
 

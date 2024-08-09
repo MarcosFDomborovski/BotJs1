@@ -9,10 +9,10 @@ module.exports = {
         let nome = interaction.guild.name;
         let id = interaction.guild.id;
         let icon = interaction.guild.iconURL({ dynamic: true });
-
         let criacao = interaction.guild.createdAt.toLocaleDateString("pt-br");
         let membros = interaction.guild.members.cache.size;
-
+        let owner = await client.users.fetch(interaction.guild.ownerId);
+        
         const canaisTotal = interaction.guild.channels.cache.size;
         const canaisTexto = interaction.guild.channels.cache.filter(c => c.type === Discord.ChannelType.GuildText).size;
         const canaisVoz = interaction.guild.channels.cache.filter(c => c.type === Discord.ChannelType.GuildVoice).size;
@@ -22,7 +22,7 @@ module.exports = {
             .setColor("Random")
             .setAuthor({ name: nome, iconURL: icon })
             .setThumbnail(icon)
-            .setTitle(`Serverinfo: ${nome}`)
+            .setTitle(`Informações do servidor: **${nome}**`)
             .addFields(
                 {
                     name: `💻 Nome:`,
@@ -35,8 +35,13 @@ module.exports = {
                     inline: true
                 },
                 {
+                    name: `👑 Dono:`,
+                    value: `\`${owner.username}\``,
+                    inline: true
+                },
+                {
                     name: `👥 Membros:`,
-                    value: `\`${membros + 1}\``,
+                    value: `\`${membros}\``,
                     inline: true
                 },
                 {
@@ -52,17 +57,17 @@ module.exports = {
                 {
                     name: `📝 Canais de texto:`,
                     value: `\`${canaisTexto}\``,
-                    inline: false
+                    inline: true
                 },
                 {
                     name: `🔊 Canais de voz:`,
                     value: `\`${canaisVoz}\``,
-                    inline: false
+                    inline: true
                 },
                 {
                     name: `📅 Categorias:`,
                     value: `\`${canaisCategoria}\``,
-                    inline: false
+                    inline: true
                 }
             );
 

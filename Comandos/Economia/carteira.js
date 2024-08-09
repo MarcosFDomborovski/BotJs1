@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 
 module.exports = {
     name: "carteira",
-    description: "Veja a quantidade de moedas que você tem na carteira.",
+    description: "Veja quantas moedas você tem na carteira.",
     type: Discord.ApplicationCommandType.ChatInput,
 
     run: async (client, interaction) => {
