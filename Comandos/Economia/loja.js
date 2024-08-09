@@ -3,7 +3,6 @@ const User = require('../../models/user');
 const dono = "474334792830156805";
 const selectedItems = new Map(); // Map para armazenar itens selecionados temporariamente
 const lojaInteracoes = new Map();
-const coletoresAtivos = new Map();
 const client = require("../../index")
 
 module.exports = {
@@ -27,8 +26,7 @@ module.exports = {
                 { nome: 'Troca de cargos', descricao: 'Trocar o cargo atual por outro', preco: 2500, emoji: '🧪', customId: 'troca_cargo' }
             ],
             'punicao': [
-                { nome: 'Punição', descricao: 'Puna um usuário por 1 dia, proibindo ele de usar canais de voz', preco: 880, emoji: '🚫', customId: 'punish_user' },
-                // { nome: 'Botas de Velocidade', descricao: 'Botas que aumentam a velocidade de quem as usa.', preco: 120, emoji: '👟', customId: 'comprar_botas' }
+                { nome: 'Punição', descricao: 'Puna um usuário por 1 dia, proibindo ele de usar canais de voz', preco: 880, emoji: '🚫', customId: 'punish_user' }
             ]
         };
 
@@ -75,23 +73,22 @@ module.exports = {
             .setDescription('Escolha uma categoria abaixo para explorar os itens.')
             .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
 
-        // PERMITE A EXECUÇÃO DE UM COMANDO /HELP
         if (lojaInteracoes.has(interaction.user.id)) {
-            const { message, collectors } = lojaInteracoes.get(interaction.user.id);
-            collectors.forEach(collector => collector.stop());
+            const oldMessage = lojaInteracoes.get(interaction.user.id);
             try {
-                await message.delete();
+                await oldMessage.delete(); // Exclui a mensagem anterior da loja
             } catch (err) {
                 console.error('Erro ao deletar a mensagem anterior da loja:', err);
             }
+            lojaInteracoes.delete(interaction.user.id); // Remove a referência para evitar duplicidade
         }
-        const newMessage = await interaction.reply({ embeds: [initialEmbed], components: [createCategoryMenu()], ephemeral: true });
 
+        // Responde à interação com a nova mensagem da loja
+        const newMessage = await interaction.reply({ embeds: [initialEmbed], components: [createCategoryMenu()], ephemeral: true });
+        lojaInteracoes.set(interaction.user.id, newMessage);
 
         const filter = i => i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, max: 3 });
-
-        coletoresAtivos.set(interaction.user.id, collector)
+        const collector = newMessage.createMessageComponentCollector({ filter, max: 3, time: 60000 }); ////////////////////////////////////////////////////////////////////////////
 
         collector.on('collect', async i => {
             try {
@@ -104,12 +101,11 @@ module.exports = {
                         .setDescription('Escolha um item para comprar na categoria selecionada.')
                         .setThumbnail(interaction.guild.iconURL({ dynamic: true }));
 
-                    await i.deferUpdate({ embeds: [embed], components: [itemMenu], ephemeral: true });
-                    await i.editReply({ embeds: [embed], components: [itemMenu], ephemeral: true });
+                    await i.update({ embeds: [embed], components: [itemMenu], ephemeral: true });
                 } else if (i.customId === 'select_item') {
                     const selectedItem = Object.values(categorias).flat().find(item => item.customId === i.values[0]);
 
-                    selectedItems.set(interaction.user.id, selectedItem); // Armazena o item selecionado
+                    selectedItems.set(interaction.user.id, selectedItem);
 
                     const confirmationButtons = new Discord.ActionRowBuilder()
                         .addComponents(
@@ -124,10 +120,9 @@ module.exports = {
                         );
 
                     const confirmEmbed = createConfirmationEmbed(selectedItem);
-                    await i.deferUpdate({ embeds: [confirmEmbed], components: [confirmationButtons] });
-                    await i.editReply({ embeds: [confirmEmbed], components: [confirmationButtons] });
+                    await i.update({ embeds: [confirmEmbed], components: [confirmationButtons], ephemeral: true });
 
-                    const confirmCollector = interaction.channel.createMessageComponentCollector({ filter, max: 3 });
+                    const confirmCollector = newMessage.createMessageComponentCollector({ filter, max: 3, time: 60000 }); ////////////////////////////////////////////////////////////////////////////
 
                     confirmCollector.on('collect', async buttonInteraction => {
                         try {
@@ -154,7 +149,7 @@ module.exports = {
                                             }
                                         );
                                     await buttonInteraction.deferUpdate();
-                                    await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true });
+                                    await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true }) || await buttonInteraction.reply({ embeds: [embed], components: [], ephemeral: true });
                                     return;
 
                                 } else {
@@ -268,7 +263,7 @@ module.exports = {
                                             );
 
                                         await buttonInteraction.deferUpdate();
-                                        await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true });
+                                        await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true }) || await buttonInteraction.reply({ embeds: [embed], components: [], ephemeral: true });
                                     }
                                 }
                             } else if (buttonInteraction.customId === 'cancelar_compra') {
@@ -289,7 +284,7 @@ module.exports = {
                                     )
 
                                 await buttonInteraction.deferUpdate();
-                                await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true });
+                                await buttonInteraction.editReply({ embeds: [embed], components: [], ephemeral: true }) || await buttonInteraction.reply({ embeds: [embed], components: [], ephemeral: true });
                             }
                         } catch (error) {
                             console.error('Erro ao processar interação do botão de confirmação:', error);
@@ -301,38 +296,26 @@ module.exports = {
 
                     confirmCollector.on('end', async collected => {
                         if (collected.size === 0) {
-                            console.log("deu boa")
+                            console.table('confirmColector reiniciou')
                         }
-                        try {
-                            await newMessage.delete();
-                        } catch (err) {
-                            console.error("deu ruim")
-                        }
+
                         lojaInteracoes.delete(interaction.user.id)
                     });
                 }
-            } catch (error) {
-                console.error('Erro ao processar interação:', error);
+            } catch (err) {
+                console.error('Erro ao processar a interação:', err);
             }
         });
 
         collector.on('end', collected => {
-            console.log(`Foi coletado ${collected.size} interações.`);
-            coletoresAtivos.delete(interaction.user.id);
+            if (!collected.size) {
+                console.table('Coletor reiniciou')
+            }
         });
     }
 };
-
-// Listener para modal submit
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isModalSubmit()) return;
-
-
-
-
-
-
-
 
     const modalId = interaction.customId;
 
@@ -370,7 +353,7 @@ client.on('interactionCreate', async (interaction) => {
                     await targetUsername.send(`Perdeu a audição pelo usuário ${interaction.user}\n**Motivo:** Item comprado na loja!`);
                 } else {
                     await interaction.deferUpdate();
-                    await interaction.editReply({ content: `**O usuário ${targetUsername.user} não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    await interaction.editReply({ content: `**O usuário ${targetUsername.user} não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true }) || await interaction.reply({ content: `**O usuário ${targetUsername.user} não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
                     return;
                 }
 
@@ -410,7 +393,7 @@ client.on('interactionCreate', async (interaction) => {
                 );
 
             await interaction.deferUpdate();
-            await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true }) || await interaction.reply({ content: '', embeds: [embed], components: [], ephemeral: true });
 
             let embedAviso = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
@@ -441,7 +424,8 @@ client.on('interactionCreate', async (interaction) => {
                 return;
             } else if (muteSelf) {
                 await interaction.deferUpdate();
-                await interaction.editReply({ content: `**O usuário ${targetUsername.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true });
+                await interaction.editReply({ content: `**O usuário ${targetUsername.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true }) || await interaction.reply({ content: `**O usuário ${targetUsername.user.username} já está mutado!**\n**Tente novamente com outro usuário!**`, embeds: [], components: [], ephemeral: true });
+                ;
                 return;
             } else {
                 await targetUsername.voice.setMute(true, `Mutado por ${tempo} pelo usuário ${interaction.user}\n**Motivo**: Item comprado na loja!`);
@@ -494,7 +478,8 @@ client.on('interactionCreate', async (interaction) => {
                 );
 
             await interaction.deferUpdate();
-            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+            await interaction.editReply({ embeds: [embed], components: [], ephemeral: true }) || await interaction.reply({ embeds: [embed], components: [], ephemeral: true });
+            ;
 
             let embedAviso = new Discord.EmbedBuilder()
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
@@ -528,7 +513,8 @@ client.on('interactionCreate', async (interaction) => {
                     await targetUsername.send(`Desconectado pelo usuário ${interaction.user}\n**Motivo:** Item comprado na loja!`);
                 } else {
                     await interaction.deferUpdate();
-                    await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    await interaction.editReply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true }) || await interaction.reply({ content: `**O usuário alvo não está em um canal de voz!\nTente com outro usuário.**`, ephemeral: true });
+                    ;
                     return;
                 }
             }
@@ -693,5 +679,4 @@ client.on('interactionCreate', async (interaction) => {
             memberDono.send({ embeds: [embedAviso] });
         }
     }
-    userMessages.delete(membro.id);
 });
