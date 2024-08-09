@@ -5,7 +5,7 @@ const db = new QuickDB();
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
-    if (message.channel.id !== '1261317957103910925') return;
+    if (message.channel.id !== '1271462552773328997') return;
 
     let numberCount = await db.get(`numberCount_${message.channel.id}`)
     if (!numberCount) numberCount = 0;
