@@ -1,4 +1,6 @@
 const Discord = require("discord.js");
+const client = require("../../index");
+const helpInteraction = new Map();
 
 module.exports = {
     name: "help",
@@ -9,7 +11,7 @@ module.exports = {
         let embedPainel = new Discord.EmbedBuilder()
             .setColor("Aqua")
             .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setDescription(`Olá ${interaction.user}, veja meus comandos interagindo com o painel abaixo:`)
+            .setDescription(`Olá ${interaction.user}, veja meus comandos interagindo com o painel abaixo:`);
 
         let embedUtilidade = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -22,7 +24,7 @@ module.exports = {
             .addFields({ name: `/ping`, value: `Veja o ping do bot.` })
             .addFields({ name: `/registrar`, value: `Registre-se no servidor. (Desativado no momento.)` })
             .addFields({ name: `/serverinfo`, value: `Envia informações sobre o servidor.` })
-            .addFields({ name: `/userinfo`, value: `Veja as informações de um usuário.` })
+            .addFields({ name: `/userinfo`, value: `Veja as informações de um usuário.` });
 
         let embedEconomia = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -33,7 +35,7 @@ module.exports = {
             .addFields({ name: `/allwin`, value: `All-win! Aposte todas suas moedas para ter uma chance de 25% para multiplicar suas moedas em x5` })
             .addFields({ name: `/double`, value: `Double or nothing! (50% de chance para duplicar sua aposta!)` })
             .addFields({ name: `/triple`, value: `Triple or nothing! (33% de chance para triplicar sua aposta!)` })
-            .addFields({ name: `/mendigar`, value: `Tente a sorte para ganhar algumas moedas!` })
+            .addFields({ name: `/mendigar`, value: `Tente a sorte para ganhar algumas moedas!` });
 
         let embedDiversao = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -45,7 +47,7 @@ module.exports = {
             .addFields({ name: `/d12`, value: `Role um dado de 12 lados.` })
             .addFields({ name: `/d20`, value: `Role um dado de 20 lados.` })
             .addFields({ name: `/hug`, value: `Abrace um membro.` })
-            .addFields({ name: `/slap`, value: `Dê um tapa em uma pessoa.` })
+            .addFields({ name: `/slap`, value: `Dê um tapa em uma pessoa.` });
 
         let embedAdm = new Discord.EmbedBuilder()
             .setColor("Aqua")
@@ -72,7 +74,7 @@ module.exports = {
             .addFields({ name: `/unban`, value: `Desbana um membro do servidor.` })
             .addFields({ name: `/unlock`, value: `Desbloqueie um canal.` })
             .addFields({ name: `/verificacao`, value: `Ative o sistema de verificação por cargo.` })
-            .addFields({ name: `/video`, value: `Armazenar um vídeo.` })
+            .addFields({ name: `/video`, value: `Armazenar um vídeo.` });
 
         let painel = new Discord.ActionRowBuilder().addComponents(
             new Discord.StringSelectMenuBuilder()
@@ -87,10 +89,23 @@ module.exports = {
                 ])
         );
 
-        await interaction.reply({ embeds: [embedPainel], components: [painel], ephemeral: true });
+        if (helpInteraction.has(interaction.user.id)) {
+            const oldMessage = helpInteraction.get(interaction.user.id);
+            try {
+                await oldMessage.delete();
+            } catch (err) {
+                console.error('Erro ao tentar deletar a mensagem anterior:', err);
+            }
+            helpInteraction.delete(interaction.user.id);
+        }
 
+        // Envia a nova mensagem e a armazena no mapa
+        const newMessage = await interaction.reply({ embeds: [embedPainel], components: [painel], ephemeral: true });
+        helpInteraction.set(interaction.user.id, newMessage);
+
+        // Cria o coletor com filtro e tempo limite
         const filter = i => i.customId === 'painelTicket' && i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter });
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 }); // 60 segundos de tempo limite
 
         collector.on("collect", async c => {
             try {
@@ -98,26 +113,27 @@ module.exports = {
 
                 let valor = c.values[0];
                 await c.deferUpdate();
-                await c.editReply({ embeds: [embedPainel] });
 
                 if (valor === "painel") {
-                    await interaction.editReply({ embeds: [embedPainel] });
+                    await c.editReply({ embeds: [embedPainel] });
                 } else if (valor === "utilidade") {
-                    await interaction.editReply({ embeds: [embedUtilidade] });
+                    await c.editReply({ embeds: [embedUtilidade] });
                 } else if (valor === "diversao") {
-                    await interaction.editReply({ embeds: [embedDiversao] });
+                    await c.editReply({ embeds: [embedDiversao] });
                 } else if (valor === "economia") {
-                    await interaction.editReply({ embeds: [embedEconomia] });
+                    await c.editReply({ embeds: [embedEconomia] });
                 } else if (valor === "adm") {
-                    await interaction.editReply({ embeds: [embedAdm] });
+                    await c.editReply({ embeds: [embedAdm] });
                 }
+
             } catch (error) {
-                console.error('Erro ao processar a interação:', error);
+                console.error('Erro ao processar a interação:');
             }
         });
 
-        collector.on("end", collected => {
-            console.log(`Coletor terminou com ${collected.size} interação(es) coletadas. (/help)`);
+        // Finaliza e limpa as interações ao término do coletor
+        collector.on("end", () => {
+            helpInteraction.delete(interaction.user.id);
         });
     }
 };
