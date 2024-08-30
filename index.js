@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
-const config = require("./config.json")
 const Database = require("./config/database")
 const db = new Database;
+require("dotenv").config();
 
 db.connect();
 
@@ -43,7 +43,7 @@ client.on('ready', () => {
 
 client.slashCommands = new Discord.Collection()
 require('./handler')(client)
-client.login(config.token)
+client.login(process.env.TOKEN)
 
 const fs = require('fs')
 fs.readdir('./Events', (err, file) => {

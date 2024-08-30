@@ -19,7 +19,7 @@ module.exports = {
             'chatvoz': [
                 { nome: 'Mute de 5 minutos', descricao: 'Mute um membro do servidor por 5 minutos.', preco: 1000, emoji: '🔇', customId: 'mute_membro5' },
                 { nome: 'Mute de 10 minutos', descricao: 'Mute um membro do servidor por 10 minutos.', preco: 2000, emoji: '🔇', customId: 'mute_membro10' },
-                { nome: 'Disconnect', descricao: 'Desconecte um membro de uma chamada de voz por 10 minutos.', preco: 5000, emoji: '📴', customId: 'disconnect_membro' },
+                { nome: 'Disconnect', descricao: 'Desconecte um membro de uma chamada de voz.', preco: 1000, emoji: '📴', customId: 'disconnect_membro' },
                 { nome: 'Ensurdecer', descricao: 'Deixe um membro do servidor surdo por 5 minutos.', preco: 2000, emoji: '🔈', customId: 'deafen_membro' },
             ],
             'cargos': [
