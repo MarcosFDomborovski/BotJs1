@@ -36,7 +36,7 @@ module.exports = {
           await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [],  ephemeral: true });
           reply.delete();
         } catch (error) {
-          console.error('Erro ao editar a resposta:', error);
+          console.error('Erro ao remover mensagem (/clear):', error);
         }
       }, remaining * 1000); 
       return;

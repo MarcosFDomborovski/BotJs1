@@ -1,5 +1,7 @@
+//////////////////////////////////////////////// testar //////////////////////////////////////////////////////
 const Discord = require("discord.js");
 const transcript = require("discord-html-transcripts");
+const Channel = require
 
 module.exports = {
     name: "transcript",
@@ -15,10 +17,20 @@ module.exports = {
     ],
 
     run: async (client, interaction) => {
-        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageMessages)){
-            interaction.reply({content: `Você não tem permissão para utilizar este comando!`, ephemeral: true})
+        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)){
+            return interaction.reply({content: `Você não tem permissão para utilizar este comando!`, ephemeral: true})
         }
-        let canalLogs = "1264342985256992849"
+        
+        const channel = await Channel.findOne({guildId: interaction.guild.id})
+        if(!channel || !channel.logsChannelId){
+            return interaction.reply({content: `O canal de logs não está configurado!\nConfigure o canal de logs antes de usar este comando.`})
+        }
+        
+        let canalLogs = `${channel.logsChannelId}`
+        if (canalLogs === null || canalLogs === ``){
+            return interaction.reply({content: `O canal de logs não foi encontrado! Verifique se o canal foi configurado corretamente com o comando **/botconfig**.`})
+        }
+
         let canalTranscript = interaction.options.getChannel("chat");
         if (!canalTranscript) canalTranscript = interaction.channel;
 
@@ -36,11 +48,11 @@ module.exports = {
 
         const embed1 = new Discord.EmbedBuilder()
             .setColor("Green")
-            .setDescription(`O transcript foi criado com sucesso em ${canalLogs}!`)
+            .setDescription(`O transcript do canal ${canalTranscript} foi criado com sucesso em ${canalLogs}!`)
 
         const embed2 = new Discord.EmbedBuilder()
             .setColor("Green")
-            .setDescription(`O transcript do canal ${canalTranscript}  foi criado com sucesso!`)
+            .setDescription(`O transcript do canal ${canalTranscript} foi criado com sucesso!`)
 
         if (canalTranscript === interaction.channel) {
             interaction.reply({ embeds: [embed2], files: [attachment] }).catch(e => {

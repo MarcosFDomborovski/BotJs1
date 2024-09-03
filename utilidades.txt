@@ -38,3 +38,20 @@ let embed = new Discord.EmbedBuilder()
     // const targetUser = interaction.guild.members.cache.find(m => m.user.id === targetId);
     // let guild = await client.guilds.cache.get(interaction.guildId);
     // const targetUser = await interaction.guild.members.fetch(targetId);
+
+
+
+
+1269999990139523092 id canal bots
+1271462552773328997 id canal contador
+983145929634906192 id canal novidades do canal
+1037236388292202527 id novidade dos games
+904104010313773056 id canal comandos
+904083876715057192 id canal anuncios publicos
+1267456048642658365 id canal cores
+904081034193301559 id geral
+1264342985256992849 id canal logs STAFF
+1264400463277592647 id canal sugestoes STAFF
+1271463088331161632 id canal logs loja STAFF
+
+

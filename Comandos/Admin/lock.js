@@ -9,7 +9,7 @@ module.exports = {
             name: "canal",
             description: "Mencione um canal para bloquear o chat.",
             type: Discord.ApplicationCommandOptionType.Channel,
-            required: true,
+            required: false,
         },
     ],
 

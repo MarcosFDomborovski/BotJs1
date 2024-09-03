@@ -1,5 +1,6 @@
 const Discord = require("discord.js")
 const client = require("../../index")
+const Channel = require('../../models/config')
 
 module.exports = {
     name: "avaliação",
@@ -27,7 +28,16 @@ module.exports = {
     ],
     run: async (client, interaction) => {
 
-        let canalLogsId = "1264342985256992849";
+        const channel = await Channel.findOne({guildId: interaction.guild.id})
+        if(!channel || !channel.logsChannelId){
+            return interaction.reply({content: `O canal de logs não foi configurado!\nConfigure com o comando **/botconfig**.`})
+        }
+        
+        let canalLogsId = `${channel.logsChannelId}`;
+        if (!canalLogsId || canalLogsId === null || canalLogsId === undefined){
+            return interaction.reply({content: `O canal de logs não foi encontrado!\nVerifique se foi configurado corretamente com o comando **/botconfig**.`})
+        }
+
         let member = interaction.options.getUser("membro")
         let nota = interaction.options.getNumber("nota")
         let comentario = interaction.options.getString("comentário")
