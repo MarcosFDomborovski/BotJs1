@@ -2,7 +2,6 @@ const Discord = require("discord.js")
 const Database = require("./config/database")
 const db = new Database;
 require("dotenv").config();
-
 db.connect();
 
 const client = new Discord.Client({
@@ -38,7 +37,7 @@ client.on('interactionCreate', (interaction) => {
 })
 
 client.on('ready', () => {
-    console.log(`✅ O bot ${client.user.username} ta online!`)
+    console.log(`✅ O bot ${client.user.username} ta online em ${client.guilds.cache.size} servidores!`)
 })
 
 client.slashCommands = new Discord.Collection()

@@ -7,10 +7,10 @@ const ConfigSchema = new mongoose.Schema({
     leaveChannelId: { type: String, required: false, default: "Não configurado." },
     announcementChannelId: { type: String, required: false, default: "Não configurado." },
     suggestionChannelId: { type: String, required: false, default: "Não configurado." },
-    botsChannelId: { type: String, required: false, default: "Não configurado." },
+    autoRoleId: { type: String, required: false, default: "Não configurado." },
     botVoiceChannelId: { type: String, required: false, default: "Não configurado." },
-    notificationChannelId: { type: String, required: false, default: "Não configurado." },
     storeLogsChannelId: { type: String, required: false, default: "Não configurado." },
+    botMessageCountNumbersId: { type: String, required: false, default: "Não configurado." },
 })
 
 module.exports = mongoose.model('Configuracoes', ConfigSchema)
