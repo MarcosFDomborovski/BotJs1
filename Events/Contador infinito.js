@@ -1,11 +1,18 @@
+////////////////////////////////////////////// TESTAR /////////////////////////////////////
 const Discord = require("discord.js")
 const client = require("../index")
 const { QuickDB } = require("quick.db")
 const db = new QuickDB();
+const Channel = require('../models/config')
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
-    if (message.channel.id !== '1271462552773328997') return;
+
+    let channel = await Channel.findOne({ guildId: message.author.guild.id })
+    if (!channel || !channel.botMessageCountNumbersId)
+        return
+
+    if (message.channel.id !== `${channel.botMessageCountNumbersId}`) return;
 
     let numberCount = await db.get(`numberCount_${message.channel.id}`)
     if (!numberCount) numberCount = 0;

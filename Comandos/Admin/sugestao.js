@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const { QuickDB } = require("quick.db");
 const db = new QuickDB();
+const Channel = require('../../models/config')
 
 module.exports = {
     name: "sugestao",
@@ -20,12 +21,20 @@ module.exports = {
             interaction.reply({ content: "Você não possui permissão para utilizar este comando!", ephemeral: true })
         } else {
             let canal = interaction.options.getChannel("canal_formulário")
-            let canalSugestoes = interaction.guild.channels.cache.get("1264400463277592647")
+            let channel = await Channel.findOne({guildId: interaction.guild.id})
+            if(!channel || !channel.suggestionChannelId){
+                return interaction.reply({content: `O canal de logs para as sugesetões não está configurado!\nUse o comando **/botconfig** para configurar o bot.`})
+            }
+
+            let canalSugestoes = interaction.guild.channels.cache.get(`${channel.suggestionChannelId}`)
+            if (!canalSugestoes || canalSugestoes === undefined){
+                return interaction.reply({content: `O canal de logs para as sugestões não está configurado!\nUse o comando **/botconfig** para configurar o bot.`})
+            }
 
             if (canal.type !== Discord.ChannelType.GuildText) {
-                interaction.reply({ content: `O canal ${canal} não é um canal de texto!`, ephemeral: true })
+                return interaction.reply({ content: `O canal ${canal} não é um canal de texto!`, ephemeral: true })
             } else if (canalSugestoes.type !== Discord.ChannelType.GuildText && canalSugestoes.type !== Discord.ChannelType.PrivateThread) {
-                interaction.reply({ content: `O canal ${canalSugestoes} não é um canal de texto válido!`, ephemeral: true })
+                return interaction.reply({ content: `O canal ${canalSugestoes} não é um canal de texto válido!`, ephemeral: true })
             } else {
                 await db.set(`canal_${interaction.guild.id}`, canal.id)
                 await db.set(`canalSugestoes_${interaction.guild.id}`, canalSugestoes.id)

@@ -34,7 +34,7 @@ client.on("messageCreate", async (message) => {
 
     mencoes.forEach(element => {
         if (message.content.includes(`conta a novidade ${element}`)) {
-            message.reply(`Adivinha quem que já pode dirigir? Isso mesmo, **ele**, o **ILUMINADO** <@${dono}>`);
+            message.reply(`Nenhuma novidade.`);
         } else if (message.content === element) {
             let embed = new Discord.EmbedBuilder()
                 .setColor("Random")

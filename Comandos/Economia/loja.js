@@ -5,6 +5,7 @@ const selectedItems = new Map(); // Map para armazenar itens selecionados tempor
 const lojaInteracoes = new Map();
 const client = require("../../index");
 const messages = require('../../models/messages');
+const Channel = require('../../models/config')
 
 module.exports = {
     name: 'loja',
@@ -19,7 +20,7 @@ module.exports = {
             'chatvoz': [
                 { nome: 'Mute de 5 minutos', descricao: 'Mute um membro do servidor por 5 minutos.', preco: 1000, emoji: '🔇', customId: 'mute_membro5' },
                 { nome: 'Mute de 10 minutos', descricao: 'Mute um membro do servidor por 10 minutos.', preco: 2000, emoji: '🔇', customId: 'mute_membro10' },
-                { nome: 'Disconnect', descricao: 'Desconecte um membro de uma chamada de voz.', preco: 1000, emoji: '📴', customId: 'disconnect_membro' },
+                { nome: 'Disconnect', descricao: 'Desconecte um membro de uma chamada de voz.', preco: 500, emoji: '📴', customId: 'disconnect_membro' },
                 { nome: 'Ensurdecer', descricao: 'Deixe um membro do servidor surdo por 5 minutos.', preco: 2000, emoji: '🔈', customId: 'deafen_membro' },
             ],
             'cargos': [
@@ -318,14 +319,20 @@ client.on('interactionCreate', async (interaction) => {
     if (!membro) membro = new User({ discordId: interaction.user.id, username: interaction.user.username });
 
     const modalId = interaction.customId;
-    const canalLogs = interaction.guild.channels.cache.get('1271463088331161632')
+
+    const channel = await Channel.findOne({guildId: interaction.guild.id})
+    if(!channel || !channel.logsChannelId){
+        return interaction.reply({content: `O canal de logs da loja não está configurado!\nConfigure esse canal pelo comando **/botconfig**.`})
+    }
+    const canalLogs = interaction.guild.channels.cache.get(`${channel.logsChannelId}`)
+    if(!canalLogs || canalLogs === null || canalLogs === ``){
+        return interaction.reply({content: `O canal de logs da loja não foi encontrado! Verifique se foi configurado corretamente pelo comando **/botconfig**.`})
+    }
+
     let memberDono = await interaction.guild.members.fetch(dono);
 
     const selectedItem = selectedItems.get(interaction.user.id);
     const targetId = interaction.fields.getTextInputValue('usuarioAlvo');
-
-
-
 
     // Check if the interaction is from the correct modal
     if (modalId.startsWith('modal_')) {
