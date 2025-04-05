@@ -21,6 +21,12 @@ module.exports = {
             required: false,
         },
         {
+            name: "logs_convites",
+            description: "Mencione o canal onde serão enviadas as logs de convites.",
+            type: Discord.ApplicationCommandOptionType.Channel,
+            required: false
+        },
+        {
             name: "canal_de_sugestoes",
             description: "Mencione o canal onde serão enviadas as sugestões dos usuários.",
             type: Discord.ApplicationCommandOptionType.Channel,
@@ -49,7 +55,7 @@ module.exports = {
             description: "Mencione o canal onde será enviada as logs de saída de um usuário.",
             type: Discord.ApplicationCommandOptionType.Channel,
             required: false,
-        },
+        }
     ],
 
     run: async (client, interaction) => {
@@ -60,6 +66,7 @@ module.exports = {
         try {
             const botVoiceChannel = interaction.options.getChannel("voicechat_bot")
             const logsChannel = interaction.options.getChannel("canal_de_logs");
+            const logsInvite = interaction.options.getChannel("logs_convites")
             const storeLogChannel = interaction.options.getChannel("logs_loja");
             const suggestionsChannel = interaction.options.getChannel("canal_de_sugestoes");
             const announcementChannel = interaction.options.getChannel("canal_de_anuncios");
@@ -68,17 +75,17 @@ module.exports = {
 
             let currentConfig = await Channel.findOne({ guildId: interaction.guild.id });
 
-            const filter = { guildId: interaction.guild.id };
+            const filter = { guildId: interaction.guild.id }; // Filtro para buscar informações de um servidor específico.
             const update = {
                 guildId: interaction.guild.id,
                 botVoiceChannelId: botVoiceChannel ? botVoiceChannel.id : currentConfig?.botVoiceChannelId,
                 logsChannelId: logsChannel ? logsChannel.id : currentConfig?.logsChannelId,
+                logsInvite: logsInvite ? logsInvite.id : currentConfig?.logsChannelId,
                 suggestionChannelId: suggestionsChannel ? suggestionsChannel.id : currentConfig?.suggestionChannelId,
                 storeLogsChannelId: storeLogChannel ? storeLogChannel.id : currentConfig?.storeLogsChannelId,
                 announcementChannelId: announcementChannel ? announcementChannel.id : currentConfig?.announcementChannelId,
                 welcomeChannelId: welcomeChannel ? welcomeChannel.id : currentConfig?.welcomeChannelId,
                 leaveChannelId: leaveChannel ? leaveChannel.id : currentConfig?.leaveChannelId,
-
             };
             const options = { upsert: true, new: true };
 
@@ -92,6 +99,7 @@ module.exports = {
             } else {
                 missingChannels.push("Logs do bot");
             }
+            
             if (update.storeLogsChannelId) {
                 configuredChannels.push(`**Logs da loja:** <#${update.storeLogsChannelId}>`);
             } else {
@@ -106,20 +114,23 @@ module.exports = {
                 configuredChannels.push(`**Canal de anúncios:** <#${update.announcementChannelId}>`);
             } else {
                 missingChannels.push("Canal de anúncios");
-            } 
-            if ( update.welcomeChannelId){
+            }
+            if (update.botVoiceChannelId) {
+                configuredChannels.push(`**Canal de voz do bot: ** <#${update.botVoiceChannelId}>`);
+            }
+            if (update.welcomeChannelId) {
                 configuredChannels.push(`**Canal de bem-vindo: ** <#${update.welcomeChannelId}>`)
             } else {
                 missingChannels.push(`Canal de bem-vindo`)
             }
-            if (update.leaveChannelId){
+            if (update.leaveChannelId) {
                 configuredChannels.push(`**Canal de saída de usuários:** <#${update.leaveChannelId}>`)
             } else {
                 missingChannels.push(`**Canal de saída de usuários**`)
             }
 
             let replyMessage = `Configurações salvas com sucesso!\n\n**Canais configurados:**\n${configuredChannels.join("\n")}`;
-            
+
             if (missingChannels.length > 0) {
                 replyMessage += `\n\n**Canais faltando:**\n${missingChannels.join("\n")}`;
             } else {

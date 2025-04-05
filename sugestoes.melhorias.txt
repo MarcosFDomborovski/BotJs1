@@ -1,0 +1,2 @@
+spam de anuncios de algm em live
+- Criar um canal exclusivo para esses anúncios, adicionar verificação se a mensagem contém twitch.tv e redirecionar para o canal de anúncios.

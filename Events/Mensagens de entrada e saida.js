@@ -6,7 +6,7 @@ const Channel = require('../models/config')
 
 client.on("guildMemberAdd", (member) => {
     client.guilds.cache.forEach(async (guild) => {
-        const channel = await Channel.findOne({ guildId: guild.id })
+        const channel = await Channel.findOne({ guildId: guild?.id })
         if (!channel || !channel.welcomeChannelId) {
             const owner = await guild.fetchOwner()
             console.log(`O canal de boas vindas não foi configurado!\nConfigure esse canal pelo comando /botconfig.`)
@@ -17,7 +17,6 @@ client.on("guildMemberAdd", (member) => {
             console.log(`Servidor: [${guild.name}] - O canal de boas vindas não foi configurado!\n`)
             owner.send(`Servidor: [${guild.name}] - O canal de boas vindas não foi configurado!\nConfigure pelo comando **/botconfig**.`)
         }
-
         try {
             let embed = new Discord.EmbedBuilder()
                 .setColor('Green')
@@ -34,9 +33,10 @@ client.on("guildMemberAdd", (member) => {
 
 client.on("guildMemberRemove", (member) => {
     client.guilds.cache.forEach(async (guild) => {
-        const channel = await Channel.findOne({ guildId: guild.id })
+        const channel = await Channel.findOne({ guildId: guild?.id })
         if (!channel || !channel.welcomeChannelId) {
             const owner = await guild.fetchOwner()
+            console.log(owner)
             console.log(`O canal de adeus não foi configurado!\nConfigure esse canal pelo comando /botconfig.`)
             return owner.send(`O canal de adeus não foi configurado!\nConfigure esse canal pelo comando **/botconfig**.`)
         }

@@ -6,17 +6,15 @@ const db = new QuickDB();
 const Channel = require('../models/config')
 
 client.on("messageCreate", async (message) => {
+    console.log(`${message.author.username}:\n${message.content}\n`)
     if (message.author.bot) return;
 
-    let channel = await Channel.findOne({ guildId: message.author.guild.id })
-    if (!channel || !channel.botMessageCountNumbersId)
-        return
-
+    let channel = await Channel.findOne({ guildId: message?.author?.guild?.id })
+    if (!channel || !channel.botMessageCountNumbersId) return
     if (message.channel.id !== `${channel.botMessageCountNumbersId}`) return;
 
     let numberCount = await db.get(`numberCount_${message.channel.id}`)
     if (!numberCount) numberCount = 0;
-
     if (isNaN(message.content)) return message.reply({ content: `Isso não é um número!` }).then(msg => {
         message.react(`❌`)
         setTimeout(() => {

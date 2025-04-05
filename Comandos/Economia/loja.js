@@ -562,7 +562,7 @@ client.on('interactionCreate', async (interaction) => {
         else if (modalId.endsWith('punish_user')) {
             const selectedItem = selectedItems.get(interaction.user.id); // Recupera o item selecionado
             const targetUser = interaction.fields.getTextInputValue('usuarioAlvo');
-            const cargoCastigo = interaction.guild.roles.cache.get('1269001666632487044').id
+            const cargoCastigo = interaction.guild.roles.cache.get('1357909360042446858').id
 
 
             try {
@@ -678,7 +678,6 @@ client.on('interactionCreate', async (interaction) => {
             .setDescription(`Olá ${memberDono}\nO usuário (${interaction.user}) - (id - ${interaction.user.id}) comprou e usou **${selectedItem.nome}** no usuário **${targetUsername.user.username}**!`)
             .setFooter({ text: 'Data da compra:' })
             .setTimestamp(Date.now());
-
         canalLogs.send({ embeds: [embedAviso] });
     } catch (err) {
         await interaction.deferUpdate();
