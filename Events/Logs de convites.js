@@ -1,8 +1,11 @@
 const Discord = require('discord.js')
 const client = require('../index')
+const config = require('../models/config')
 
-client.on("inviteCreate", (invite) => {
-
+client.on("inviteCreate", async (invite) => {
+    console.log(invite.channelId)
+    const channelLogs2 = await config.find({logsChannelId: invite.channelId, guildId: invite.guild.id})
+    console.log(channelLogs2)
     const channelLog = invite.guild.channels.cache.get("1264342985256992849")
     const convite = {
         url: invite.url,
@@ -16,7 +19,7 @@ client.on("inviteCreate", (invite) => {
         convite.timeExpires = "\`Nunca\`"
     } else {
         convite.timeExpires = `<t:${Math.floor(convite.timeExpires / 1000)}:R>`
-    }
+    } 
 
     const embed = new Discord.EmbedBuilder()
         .setColor("Green")

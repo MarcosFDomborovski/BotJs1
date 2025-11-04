@@ -17,6 +17,13 @@ module.exports = {
   cooldown: 5000,
 
   run: async (client, interaction) => {
+    if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageMessages)) {
+      return interaction.reply({
+        content: `Você não possui permissão para utilizar este comando!`,
+        ephemeral: true
+      });
+    }
+
     const userId = interaction.user.id;
     const now = Date.now();
     const cooldown = client.cooldowns.get(userId) || 0;
@@ -29,7 +36,7 @@ module.exports = {
           await interaction.editReply({ content: 'Esta mensagem foi removida.', embeds: [], components: [],  ephemeral: true });
           reply.delete();
         } catch (error) {
-          console.error('Erro ao editar a resposta:', error);
+          console.error('Erro ao remover mensagem (/clear):', error);
         }
       }, remaining * 1000); 
       return;
@@ -38,13 +45,6 @@ module.exports = {
     client.cooldowns.set(userId, now);
     
     let numero = interaction.options.getNumber("quantidade");
-
-    if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageMessages)) {
-      return interaction.reply({
-        content: `Você não possui permissão para utilizar este comando!`,
-        ephemeral: true
-      });
-    }
 
     if (parseInt(numero) > 99 || parseInt(numero) <= 0) {
       let embed = new Discord.EmbedBuilder()

@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const { description } = require("./dm");
+const Channel = require("../../models/config")
 
 module.exports = {
     name: "anunciar",
@@ -19,12 +20,6 @@ module.exports = {
             required: true,
         },
         {
-            name: "canal",
-            description: "Mencione um canal onde o anúncio será enviado.",
-            type: Discord.ApplicationCommandOptionType.Channel,
-            required: false,
-        },
-        {
             name: "cor",
             description: "Coloque uma cor em hexadecimal.",
             type: Discord.ApplicationCommandOptionType.String,
@@ -33,30 +28,32 @@ module.exports = {
     ],
 
     run: async (client, interaction) => {
+        const channel = await Channel.findOne({ guildId: interaction.guild.id })
+
+        if (!channel || !channel.announcementChannelId)
+            return interaction.reply({ content: `Canal de anúncios não configurado!\nUtilize o comando **/botconfig** para configurar os canais.`, ephemeral: true });
+
+        const announcementChannel = interaction.guild.channels.cache.get(channel.announcementChannelId)
+        if (!announcementChannel || announcementChannel === undefined)
+            return interaction.reply({ content: `O canal de anúncios não foi configurado!\nUtilize o comando **/botconfig** para configurar os canais.`, ephemeral: true });
+
 
         if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.ManageGuild)) {
             interaction.reply({ content: `Você não possui permissão para utilizar este comando!`, ephemeral: true })
         } else {
             let titulo = interaction.options.getString("título");
             let descricao = interaction.options.getString("descrição");
-            let canal = interaction.options.getChannel("canal");
-            if(!canal) canal = interaction.channel
             let cor = interaction.options.getString("cor");
             if (!cor) cor = "Random";
-            if (Discord.ChannelType.GuildText !== canal.type)
-                return interaction.reply({content:`❌ Este canal não é um canal de texto para enviar uma mensagem!`, ephemeral: true});
 
             let embed = new Discord.EmbedBuilder()
-            .setColor(cor)
-            .setTitle(`✨ ${titulo} ✨`)
-            .setDescription(descricao)
-            .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
-            .setAuthor({ name: interaction.user, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setFooter({ text: 'Mensagem criada por:', iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
-            .setTimestamp();
+                .setColor(cor)
+                .setTitle(`✨ ${titulo} ✨`)
+                .setDescription(descricao)
+                .setTimestamp();
 
-            canal.send({ embeds: [embed] }).then(() => {
-                interaction.reply({ content: `✅ Seu anúncio foi enviado em ${canal} com sucesso!`, ephemeral: true })
+                announcementChannel.send({ embeds: [embed] }).then(() => {
+                interaction.reply({ content: `✅ Seu anúncio foi enviado em ${announcementChannel} com sucesso!`, ephemeral: true })
             }).catch((e) => {
                 interaction.reply({ content: `❌ Algo deu errado.`, ephemeral: true });
             })

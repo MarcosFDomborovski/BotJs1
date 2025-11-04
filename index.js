@@ -1,9 +1,20 @@
 const Discord = require("discord.js")
-const config = require("./config.json")
 const Database = require("./config/database")
 const db = new Database;
-
+require("dotenv").config();
+require("colors")
 db.connect();
+
+require("./logger.js")
+
+process.on("uncaughtException", (err) => {
+    console.log(`${'o'.red} Erro não tratado: ${err.message}`.white)
+    process.exit(1);
+})
+
+process.on("unhandledRejection", (err) => {
+    console.log(`${'o'.red} Erro não tratado: ${err.message}`.white)
+})
 
 const client = new Discord.Client({
     intents: [1, 512, 32768, 2, 128,
@@ -37,13 +48,38 @@ client.on('interactionCreate', (interaction) => {
     }
 })
 
-client.on('ready', () => {
-    console.log(`🔥 O bot ${client.user.username} ta online!`)
+client.on('clientReady', () => {
+    console.log(' o'.green + ` O bot ${client.user.username} ta online em ${client.guilds.cache.size} servidores!`.white)
 })
+
+function isClientConnected() {
+    return client && client.isReady()
+}
+
+async function reconnectClient() {
+    if(!isClientConnected()){
+        try{
+            await client.login(process.env.TOKEN)
+            console.log(' o'.green + `Bot ${client.user.username} reconectado com sucesso!`.white)
+            return true
+        } catch (error) {
+            console.log(' o'.red + `Erro ao reconectar o bot: ${error}`.white)
+            return false
+        }
+    }
+    return true
+}
+
+setInterval(async () => {
+    const connected = await reconnectClient();
+    if(!connected){
+        console.log(' o'.red + `Bot ${client.user.username} desconectado!`.white)
+    }
+}, 10000)
 
 client.slashCommands = new Discord.Collection()
 require('./handler')(client)
-client.login(config.token)
+client.login(process.env.TOKEN)
 
 const fs = require('fs')
 fs.readdir('./Events', (err, file) => {
@@ -54,4 +90,7 @@ fs.readdir('./Events', (err, file) => {
 
 client.userDB = require("./models/user")
 client.userMessages = require("./models/messages")
-client.deletedLinks = require("./models/anti-link")
+client.deletedLinks = require("./models/antilink")
+client.afk = require("./models/afk")
+client.guildSettings = require("./models/guildSettings")
+client.counters = require("./models/counters")

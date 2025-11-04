@@ -1,3 +1,6 @@
+
+// é a versão feia
+
 // const Discord = require("discord.js");
 
 // module.exports = {
