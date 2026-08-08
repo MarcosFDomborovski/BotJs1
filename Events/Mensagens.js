@@ -19,13 +19,13 @@ client.on("messageCreate", async (message) => {
         membro.mensagens += 1;
         await membro.save();
 
-        const newMessage = new Message({
-            discordId: message.author.id,
-            username: message.author.username,
-            content: message.content,
-            channelId: message.channel.id
-        });
-        await newMessage.save();
+        // const newMessage = new Message({
+        //     discordId: message.author.id,
+        //     username: message.author.username,
+        //     content: message.content,
+        //     channelId: message.channel.id
+        // });
+        // await newMessage.save();
     } catch (err) {
         console.error(`Erro ao salvar mensagem de ${message.author.username} no canal ${message.channel.name}`, err);
     }

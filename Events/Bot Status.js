@@ -31,7 +31,7 @@ let status = [
   },
 ];
 
-client.on("ready", (c) => {
+client.on("clientReady", (c) => {
   setInterval(() => {
     let random = Math.floor(Math.random() * activity.length);
     let random2 = Math.floor(Math.random() * status.length);

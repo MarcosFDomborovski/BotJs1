@@ -1,0 +1,7 @@
+{
+  "plugins": {
+    "agentic-awesome-skills/agentic-bundle-typescript-javascript": {
+      "enabled": true
+    }
+  }
+}

@@ -1,182 +1,173 @@
-const Discord = require("discord.js");
-const client = require("../index");
-const {
-  joinVoiceChannel,
-  VoiceConnectionStatus,
-  entersState,
-} = require("@discordjs/voice");
-const Channel = require("../models/config");
+// const Discord = require("discord.js");
+// const client = require("../index");
+// const {
+//   joinVoiceChannel,
+//   VoiceConnectionStatus,
+//   VoiceConnectionDisconnectReason,
+//   entersState,
+//   getVoiceConnection,
+// } = require("@discordjs/voice");
+// const Channel = require("../models/config");
+// require("colors");
+// const sodium = require("libsodium-wrappers");
 
-client.on("clientReady", async () => {
-  // Aguarda um pouco antes de tentar conectar aos canais
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+// const createDisconnectionHandler = (connection, canal) => {
+//   const guildName = canal.guild.name;
 
-  const guilds = Array.from(client.guilds.cache.values());
+//   return async (oldState, newState) => {
+//     console.log(`${'o'.yellow} [${guildName}] Desconectado do canal [${canal.name}]! Motivo: ${newState.reason} (Code: ${newState.closeCode})`);
 
-  for (const guild of guilds) {
-    try {
-      console.log(' o '.blue + `Verificando servidor: [${guild.name}]`.white);
+//     if (
+//       newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&
+//       newState.closeCode === 4014
+//     ) {
+//       console.log(`${'o'.yellow} [${guildName}] Bot foi desconectado por um usuário. Não vai reconectar.`);
+//       connection.destroy();
+//       return;
+//     }
 
-      const channel = await Channel.findOne({ guildId: guild.id });
-      let canal = guild.channels.cache.get(`${channel?.botVoiceChannelId}`);
-      let chatChannel = guild?.channels?.cache.find((ch) => ch.name == "logs");
+//     try {
+//       console.log(`${'o'.blue} [${guildName}] Tentando reconexão automática para [${canal.name}] (5s)...`);
+//       await entersState(connection, VoiceConnectionStatus.Ready, 5_000);
+//       console.log(`${'o'.green} [${guildName}] Reconectado automaticamente ao canal [${canal.name}]!`);
+//     } catch (error) {
+//       console.log(`${'o'.red} [${guildName}] Reconexão automática para [${canal.name}] falhou. Destruindo conexão.`);
+//       connection.destroy();
+//     }
+//   };
+// };
 
-      if (!channel) {
-        const owner = await guild.fetchOwner();
-        if (guild.id == "1106736904440913942") {
-          console.log(' o '.yellow + `Pulando servidor específico: [${guild.name}]`.white);
-          continue;
-        }
+// client.on("clientReady", async () => {
+//   try {
+//     await sodium.ready;
+//     console.log(`${'o'.blue} [Global] Sodium pronto para uso.`);
+//   } catch (error) {
+//     console.log(`${'o'.red} [Global] Erro ao carregar Sodium: ${error.message}`);
+//     return;
+//   }
+//   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        if (chatChannel) {
-          try {
-            await chatChannel.send(
-              ' o '.red + `Servidor: [${guild.name}] - O bot não conseguiu entrar no canal de voz! Utilize o comando **/botconfig** para configurar os canais! Caso não faça isso, alguns comandos não funcionarão!`
-            );
-          } catch (sendError) {
-            console.log(
-              ' o '.red + `Erro ao enviar mensagem no canal logs: ${sendError.message}`
-            );
-          }
-        } else {
-          console.log(
-            ' o '.red + `Servidor: [${guild.name}] - Canal de logs não encontrado e configuração não existe`
-          );
-        }
-        continue;
-      }
+//   const guilds = Array.from(client.guilds.cache.values());
 
-      if (
-        channel.botVoiceChannelId === null ||
-        channel.botVoiceChannelId === undefined ||
-        channel.botVoiceChannelId === "Não configurado."
-      ) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Canal de voz do bot não foi configurado`
-        );
-        continue;
-      }
+//   for (const guild of guilds) {
+//     const guildName = guild.name;
+//     try {
+//       console.log(`${'o'.blue} [${guildName}] Verificando servidor...`);
 
-      if (!canal || canal === undefined || canal === null) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Canal de voz não encontrado (ID: ${channel.botVoiceChannelId})`
-        );
-        continue;
-      }
+//       const channelConfig = await Channel.findOne({ guildId: guild.id });
 
-      if (canal.type !== Discord.ChannelType.GuildVoice) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Canal configurado não é de voz! [ ${canal.name} ] (Tipo: ${canal.type})`
-        );
-        continue;
-      }
+//       if (!channelConfig) {
+//         if (guild.id === "1106736904440913942") {
+//           console.log(`${'o'.blue} [${guildName}] Pulando servidor específico.`);
+//           continue;
+//         }
 
-      // Verifica permissões do bot no canal
-      const botMember = guild.members.cache.get(client.user.id);
-      if (!botMember) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Bot não é membro do servidor`
-        );
-        continue;
-      }
+//         console.log(`${'o'.yellow} [${guildName}] Servidor sem configuração de canal no DB.`);
+//         const chatChannel = guild.channels.cache.find((ch) => ch.name === "logs");
+//         if (chatChannel) {
+//           try {
+//             await chatChannel.send("o ".red + `Servidor: [${guildName}] - O bot não conseguiu entrar no canal de voz! Utilize o comando **/botconfig** para configurar os canais! Caso não faça isso, alguns comandos não funcionarão!`);
+//           } catch (sendError) {
+//             console.log(`${'o'.red} [${guildName}] Erro ao enviar msg no canal logs: ${sendError.message}`);
+//           }
+//         }
+//         continue;
+//       }
 
-      const permissions = canal.permissionsFor(botMember);
-      if (!permissions.has(Discord.PermissionFlagsBits.Connect)) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Bot não tem permissão para conectar no canal [ ${canal.name} ]`
-        );
-        continue;
-      }
+//       const voiceChannelId = channelConfig.botVoiceChannelId;
+//       if (!voiceChannelId || voiceChannelId === "Não configurado.") {
+//         console.log(`${'o'.yellow} [${guildName}] Canal de voz do bot não foi configurado.`);
+//         continue;
+//       }
 
-      if (!permissions.has(Discord.PermissionFlagsBits.Speak)) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Bot não tem permissão para falar no canal [ ${canal.name} ]`
-        );
-      }
+//       const canal = guild.channels.cache.get(voiceChannelId);
+//       if (!canal) {
+//         console.log(`${'o'.yellow} [${guildName}] Canal de voz não encontrado (ID: ${voiceChannelId})`);
+//         continue;
+//       }
 
-      // Verifica se o bot já está conectado em algum canal de voz neste servidor
-      const existingConnection = client.voice?.connections?.get(guild.id);
-      if (existingConnection) {
-        console.log(
-          ' o '.red + `Servidor: [${guild.name}] - Bot já está conectado em outro canal de voz`
-        );
-        continue;
-      }
+//       if (canal.type !== Discord.ChannelType.GuildVoice) {
+//         console.log(`${'o'.yellow} [${guildName}] Canal [${canal.name}] não é de voz (Tipo: ${canal.type})`);
+//         continue;
+//       }
 
-      console.log(
-        ' o '.yellow + `Tentando conectar ao canal: [ ${canal.name} ] no servidor [${guild.name}]`
-      );
+//       const botMember = guild.members.cache.get(client.user.id);
+//       if (!botMember) {
+//         console.log(`${'o'.yellow} [${guildName}] Bot não é membro do servidor (cache?).`);
+//         continue;
+//       }
 
-      try {
-        const connection = joinVoiceChannel({
-          channelId: canal.id,
-          guildId: canal.guild.id,
-          adapterCreator: canal.guild.voiceAdapterCreator,
-        });
+//       const permissions = canal.permissionsFor(botMember);
+//       if (!permissions.has(Discord.PermissionFlagsBits.Connect)) {
+//         console.log(`${'o'.yellow} [${guildName}] Sem permissão para CONECTAR em [${canal.name}]`);
+//         continue;
+//       }
 
-        // Aguarda a conexão ser estabelecida com timeout menor
-        try {
-          await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
-          console.log(' o '.green + `Conectado com sucesso ao canal [ ${canal.name} ] no servidor [${guild.name}]`);
+//       if (!permissions.has(Discord.PermissionFlagsBits.Speak)) {
+//         console.log(`${'o'.yellow} [${guildName}] Sem permissão para FALAR em [${canal.name}] (continuando mesmo assim)`);
+//       }
 
-          // Adiciona listener para desconexões inesperadas
-          connection.on(
-            VoiceConnectionStatus.Disconnected,
-            (oldState, newState) => {
-              console.log(
-                ' o '.red + `Desconectado do canal [ ${canal.name} ] no servidor [${guild.name}]`
-              );
-            }
-          );
-        } catch (timeoutError) {
-          console.log(
-            ' o '.red + `Timeout ao conectar ao canal [ ${canal.name} ] no servidor [${guild.name}] - ${timeoutError.message}`
-          );
-          connection.destroy();
-        }
-      } catch (connectionError) {
-        console.log(
-          ' o '.red + `Erro ao conectar ao canal [ ${canal.name} ] no servidor [${guild.name}] - ${connectionError.message}`
-        );
+//       if (getVoiceConnection(guild.id)) {
+//         console.log(`${'o'.blue} [${guildName}] Bot já está conectado em um canal de voz.`);
+//         continue;
+//       }
 
-        // Tenta reconectar após 15 segundos (tempo maior para evitar spam)
-        setTimeout(async () => {
-          try {
-            console.log(
-              ' o '.yellow + `Tentando reconectar ao canal [ ${canal.name} ] no servidor [${guild.name}]`
-            );
-            const retryConnection = joinVoiceChannel({
-              channelId: canal.id,
-              guildId: canal.guild.id,
-              adapterCreator: canal.guild.voiceAdapterCreator,
-            });
+//       console.log(`${'o'.blue} [${guildName}] Tentando conectar ao canal: [${canal.name}]`);
+//       try {
+//         const connection = joinVoiceChannel({
+//           channelId: canal.id,
+//           guildId: canal.guild.id,
+//           adapterCreator: canal.guild.voiceAdapterCreator,
+//         });
 
-            await entersState(
-              retryConnection,
-              VoiceConnectionStatus.Ready,
-              15_000
-            );
-            console.log(
-              ' o '.green + `Reconectado com sucesso ao canal [ ${canal.name} ] no servidor [${guild.name}]`
-            );
-          } catch (retryError) {
-            console.log(
-              ' o '.red + `Falha ao reconectar ao canal [ ${canal.name} ] no servidor [${guild.name}] - ${retryError.message}`
-            );
-          }
-        }, 15000);
-      }
+//         try {
+//           await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
+//           console.log(`${'o'.green} [${guildName}] Conectado com sucesso ao canal [${canal.name}]`);
 
-      // Aguarda um pouco antes de tentar conectar ao próximo servidor
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (guildError) {
-      console.log(
-        ' o '.red + `Erro geral no servidor [${guild.name}]: ${guildError.message}`
-      );
-    }
-  }
+//           connection.on(
+//             VoiceConnectionStatus.Disconnected,
+//             createDisconnectionHandler(connection, canal)
+//           );
+//         } catch (timeoutError) {
+//           console.log(`${'o'.yellow} [${guildName}] Timeout ao conectar em [${canal.name}] - ${timeoutError.message}`);
+//           connection.destroy();
+//         }
+//       } catch (connectionError) {
+//         console.log(`${'o'.red} [${guildName}] Erro inicial ao conectar em [${canal.name}] - ${connectionError.message}`);
 
-  console.log(' o '.green + `Processo de conexão aos canais de voz finalizado`.white);
-});
+//         setTimeout(async () => {
+//           console.log(`${'o'.blue} [${guildName}] (RETRY) Tentando reconectar ao canal [${canal.name}]`);
+//           try {
+//             const retryConnection = joinVoiceChannel({
+//               channelId: canal.id,
+//               guildId: canal.guild.id,
+//               adapterCreator: canal.guild.voiceAdapterCreator,
+//             });
 
-// 1264342784505020557 chat de voz do pasteco
+//             await entersState(
+//               retryConnection,
+//               VoiceConnectionStatus.Ready,
+//               15_000
+//             );
+//             console.log(`${'o'.green} [${guildName}] (RETRY) Reconectado com sucesso ao canal [${canal.name}]`);
+
+//             retryConnection.on(
+//               VoiceConnectionStatus.Disconnected,
+//               createDisconnectionHandler(retryConnection, canal)
+//             );
+//           } catch (retryError) {
+//             console.log(`${'o'.red} [${guildName}] (RETRY) Falha ao reconectar em [${canal.name}] - ${retryError.message}`);
+//           }
+//         }, 15000);
+//       }
+
+//       await new Promise((resolve) => setTimeout(resolve, 1000));
+//     } catch (guildError) {
+//       console.log(`${'o'.red} [${guildName}] Erro geral no servidor: ${guildError.message}`);
+//     }
+//   }
+
+//   console.log(`${'o'.green} [Global] Processo de conexão aos canais de voz finalizado.`);
+// });
+
+// Comentado pois fica desconectando frequentemente e reconectando, fazendo com que o Discord invalide o token dele.

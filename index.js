@@ -1,7 +1,7 @@
+require("dotenv").config();
 const Discord = require("discord.js")
 const Database = require("./config/database")
 const db = new Database;
-require("dotenv").config();
 require("colors")
 db.connect();
 
@@ -63,7 +63,7 @@ async function reconnectClient() {
             console.log(' o'.green + `Bot ${client.user.username} reconectado com sucesso!`.white)
             return true
         } catch (error) {
-            console.log(' o'.red + `Erro ao reconectar o bot: ${error}`.white)
+            console.log(' o'.red + ` Erro ao reconectar o bot: ${error}`.white)
             return false
         }
     }
